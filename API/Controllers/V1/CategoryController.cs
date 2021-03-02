@@ -23,7 +23,7 @@ namespace API.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Categories.Create)]
-        public async Task<IActionResult> Create([FromBody]CategoryCreationModel model)
+        public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
         {
             var create = _mapper.Map<Category>(model);
             await _categoryService.CreateCategoryAsync(create);
@@ -39,15 +39,7 @@ namespace API.Controllers.V1
             var categories = await _categoryService.GetCategoriesAsync();
             
             return Ok( (_mapper.Map<IEnumerable<CategoryDetailsModel>>(categories)));
-
-            // var getCategories = await _categoryService.GetCategoriesAsync();
-            // var categories = new List<CategoryDetailsModel>();
-            //
-            // foreach (var category in getCategories)
-            // {
-            //   categories.Add(_mapper.Map<CategoryDetailsModel>(category));
-            // }
-            // return Ok(categories);
+            
         }
 
         [HttpGet(ApiRoutes.Categories.Get)]

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 
 namespace API.Models.Category
 {
@@ -7,5 +9,6 @@ namespace API.Models.Category
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+        
     }
 }

@@ -11,6 +11,8 @@ namespace API.Services
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(Guid categoryId);
         Task<bool> DeleteCategoryAsync(Guid categoryId);
+        
+        
 
     }
 }

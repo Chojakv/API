@@ -14,6 +14,6 @@ namespace API.Domain
         
         public string ProfileImage { get; set; }
 
-        public ICollection<Ad> Ads { get; set; }
+        public ICollection<Ad> Ads { get; set; } = new List<Ad>();
     }
 }
