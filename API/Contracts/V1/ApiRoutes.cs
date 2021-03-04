@@ -14,6 +14,7 @@
             public const string Register = Base + "/idenity/register";
         }
 
+        
         public static class Ads
         {
             public const string GetAll = Base + "/ads";
