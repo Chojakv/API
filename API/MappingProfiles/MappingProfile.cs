@@ -1,5 +1,6 @@
 ﻿using API.Domain;
 using API.Models.Ad;
+using API.Models.AppUser;
 using API.Models.Category;
 using AutoMapper;
 
@@ -17,6 +18,8 @@ namespace API.MappingProfiles
             CreateMap<AdDetailsModel, Ad>().ReverseMap();
             CreateMap<AdUpdateModel, Ad>().ReverseMap();
             CreateMap<AdUpdateModel, AdDetailsModel>().ReverseMap();
+
+
         }
     }
 }

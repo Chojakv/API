@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,9 +8,8 @@ using API.Models.Ad;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers.V1
+namespace API.Controllers.V1.Ads
 {
     public class AdsController : ControllerBase
     {
@@ -28,6 +26,10 @@ namespace API.Controllers.V1
         [HttpPost(ApiRoutes.Ads.Create)]
         public async Task<IActionResult> Create([FromForm] AdCreationModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             
             var create = _mapper.Map<Ad>(model);
 
@@ -41,21 +43,26 @@ namespace API.Controllers.V1
         [HttpGet(ApiRoutes.Ads.Get)]
         public async Task<IActionResult> Get([FromRoute] Guid adId)
         {
-            var ad = await _adService.GetAdByIdAsync(adId);
-            if (ad == null)
-            {
-                return NotFound("Such ad does not exists.");
-            }
+                var ad = await _adService.GetAdByIdAsync(adId);
+                if (ad == null)
+                {
+                    return NotFound("Such ad does not exists.");
+                }
 
-            return Ok(_mapper.Map<AdDetailsModel>(ad));
+                return Ok(_mapper.Map<AdDetailsModel>(ad));
         }
 
         [HttpGet(ApiRoutes.Ads.GetAll)]
         public async Task<IActionResult> GetAll()
         {
             var ads = await _adService.GetAdsAsync();
+            
+            if (ads.Any())
+            {
+                return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
+            }
 
-            return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
+            return NotFound("Ads does not exists.");
         }
 
         [HttpGet(ApiRoutes.Ads.GetByCategory)]

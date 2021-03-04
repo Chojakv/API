@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Contracts.V1;
-using API.Domain;
 using API.Models.Category;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers.V1
+namespace API.Controllers.V1.Category
 {
     public class CategoryController : ControllerBase
     {
@@ -21,15 +20,15 @@ namespace API.Controllers.V1
             _categoryService = categoryService;
             _mapper = mapper;
         }
-
+        
         [HttpPost(ApiRoutes.Categories.Create)]
         public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
         {
-            var create = _mapper.Map<Category>(model);
+            var create = _mapper.Map<Domain.Category>(model);
             await _categoryService.CreateCategoryAsync(create);
-
+        
             var result = _mapper.Map<CategoryDetailsModel>(create);
-
+        
             return CreatedAtAction("Get", new {categoryId = create.Id},result );
         }
 
