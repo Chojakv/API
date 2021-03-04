@@ -73,24 +73,60 @@ namespace API.Services
                 };
             }
 
-            return await GenerateTokenForUserAsync(newUser);
+            var token = await GenerateTokenForUserAsync(newUser);
+
+            return new RegisterResult
+            {
+                Token = token,
+                Success = true
+            };
         }
 
+        public async Task<LoginResult> LoginAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+           
+            if (user == null)
+            {
+                return new LoginResult
+                {
+                    Errors = new[] {"User does not exists."}
+                };
+            }
 
-        public async Task<RegisterResult> GenerateTokenForUserAsync(AppUser appUser)
+            var userHasValidPassword = await _userManager.CheckPasswordAsync(user, password);
+
+            if (!userHasValidPassword)
+            {
+                return new LoginResult
+                {
+                    Errors = new[] {"User password combination is wrong."}
+                };
+            }
+
+            var token = await GenerateTokenForUserAsync(user);
+            
+            return new LoginResult
+            {
+                Token = token,
+                Success = true
+            };
+        }
+
+        private async Task<string> GenerateTokenForUserAsync(AppUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.UniqueName, appUser.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
-                new Claim("Id", appUser.Id)
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("Id", user.Id)
             };
 
-            var userClaims = await _userManager.GetClaimsAsync(appUser);
+            var userClaims = await _userManager.GetClaimsAsync(user);
             claims.AddRange(userClaims);
             
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -105,11 +141,7 @@ namespace API.Services
 
             await _dataContext.SaveChangesAsync();
 
-            return new RegisterResult
-            {
-                Success = true,
-                Token = tokenHandler.WriteToken(token),
-            };
+            return tokenHandler.WriteToken(token);
         }
         
     }
