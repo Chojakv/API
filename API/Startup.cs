@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
+using API.Data;
 using API.Domain;
 using API.Options;
 using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 
@@ -27,13 +32,14 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.DataContext>(options =>
+            services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentityCore<AppUser>()
-                .AddEntityFrameworkStores<Data.DataContext>();
-
-            services.AddControllers();
+            services.AddIdentity<AppUser, IdentityRole>(q=>q.User.RequireUniqueEmail = true)
+                .AddEntityFrameworkStores<DataContext>();
+            
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddCors(options =>
             {
@@ -46,17 +52,62 @@ namespace API
             
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAdService, AdService>();
+            services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            var jwtSettings = new JwtSettings
+            {
+                Key = Configuration["JwtSettings:Key"],
+                TokenLifetime = TimeSpan.FromDays(1)
+            };
+            services.AddSingleton(jwtSettings);
             
             services.AddMvc(options => { options.EnableEndpointRouting = false; })
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
+            var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Key)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                RequireExpirationTime = false,
+                ValidateLifetime = true
+            }; 
+            
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = tokenValidationParameters;
+                });
+            
             services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new OpenApiInfo { Title = "webAPI", Version = "v1" });
+                
+                
+                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                x.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {new OpenApiSecurityScheme{ Reference = new OpenApiReference{
+                    
+                        Id = "Bearer",
+                        Type = ReferenceType.SecurityScheme
+                    }}, new List<string>()}
+                });
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -73,9 +124,11 @@ namespace API
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+            
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
 
+            app.UseAuthentication();
             app.UseCors("CorsPolicy");
             
             app.UseSwagger(option => { option.RouteTemplate = swaggerOptions.JsonRoute; });
