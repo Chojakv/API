@@ -8,19 +8,17 @@ namespace API.Domain
     {
         [Key]
         public Guid Id { get; set; }
-        
+
+        public string Title { get; set; }
         public string Author { get; set; }
-
-        public string Name { get; set; }
-
-        public string Content { get; set; }
         
+        public string BookName { get; set; }
+        public string Content { get; set; }
         public float Price { get; set; }
 
         public string PictureAttached { get; set; }
 
         public DateTime CreationDate { get; set; }
-
         public DateTime LastEditedDate { get; set; }
         
         [ForeignKey("Category")] 

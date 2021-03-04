@@ -6,6 +6,15 @@
         public const string Version = "v1";
         public const string Base = Root + "/" + Version;
         
+        
+        public static class Identity
+        {
+            public const string Login = Base + "/identity/login";
+
+            public const string Register = Base + "/idenity/register";
+        }
+
+        
         public static class Ads
         {
             public const string GetAll = Base + "/ads";
@@ -26,6 +35,8 @@
             public const string GetAll = Base + "/categories";
 
             public const string Get = Base + "/categories/{categoryId}";
+            
+            public const string GetWithAds = Base + "/categories/{categoryId}/ads";
             
             public const string Create = Base + "/categories";
             

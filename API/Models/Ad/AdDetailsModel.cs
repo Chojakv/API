@@ -5,10 +5,12 @@ namespace API.Models.Ad
     public class AdDetailsModel
     {
         public Guid Id { get; set; }
+
+        public string Title { get; set; }
         
         public string Author { get; set; }
-
-        public string Name { get; set; }
+        
+        public string BookName { get; set; }
 
         public string Content { get; set; }
         

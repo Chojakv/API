@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
+using API.Models.Category;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API.Services
 {
@@ -23,10 +25,11 @@ namespace API.Services
              
             return await _dataContext.SaveChangesAsync() > 0;
         }
+        
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await _dataContext.Categories.ToListAsync();
+            return await _dataContext.Categories.Include(x=>x.Ads).ToListAsync();
         }
 
         public async Task<Category> GetCategoryByIdAsync(Guid categoryId)

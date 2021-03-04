@@ -46,8 +46,9 @@ namespace API.Services
             var ad = await _dataContext.Ads.FirstOrDefaultAsync(x => x.Id == adModel.Id);
             if (ad == null)
                 return false;
+            ad.Title = adModel.Title;
             ad.Author = adModel.Author;
-            ad.Name = adModel.Name;
+            ad.BookName = adModel.BookName;
             ad.Content = adModel.Content;
             ad.Price = adModel.Price;
             ad.LastEditedDate = DateTime.UtcNow;
