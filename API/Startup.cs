@@ -53,6 +53,7 @@ namespace API
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
