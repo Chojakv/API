@@ -1,4 +1,6 @@
 using System;
+using API.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace API.Models.Ad
 {

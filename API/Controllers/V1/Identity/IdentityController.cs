@@ -22,7 +22,7 @@ namespace API.Controllers.V1.Identity
 
 
         [HttpPost(ApiRoutes.Identity.Register)]
-        public async Task<IActionResult> Register([FromForm]AppUserRegistrationRequest registrationRequest)
+        public async Task<IActionResult> Register([FromForm]AppUserRegistrationModel registrationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -31,7 +31,7 @@ namespace API.Controllers.V1.Identity
                     Errors = ModelState.Values.SelectMany(x =>x.Errors.Select(xx=>xx.ErrorMessage))
                 });
             }
-            var authenticationResponse = await _identityService.RegisterAsync(registrationRequest.Username, registrationRequest.Email, registrationRequest.Password);
+            var authenticationResponse = await _identityService.RegisterAsync(registrationModel.UserName, registrationModel.Email, registrationModel.Password);
 
             if (!authenticationResponse.Success)
             {
@@ -45,6 +45,26 @@ namespace API.Controllers.V1.Identity
             {
                 Success = true,
                 Token = authenticationResponse.Token,
+            });
+        }
+
+        [HttpPost(ApiRoutes.Identity.Login)]
+        public async Task<IActionResult> Login([FromForm] AppUserLoginModel loginModel)
+        {
+            var authenticationResponse = await _identityService.LoginAsync(loginModel.Email, loginModel.Password);
+
+            if (!authenticationResponse.Success)
+            {
+                return BadRequest(new LoginResult
+                {
+                    Errors = authenticationResponse.Errors
+                });
+            }
+
+            return Ok(new LoginResult
+            {
+                Token = authenticationResponse.Token,
+                Success = true
             });
         }
     }

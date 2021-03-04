@@ -11,9 +11,21 @@
         {
             public const string Login = Base + "/identity/login";
 
-            public const string Register = Base + "/idenity/register";
+            public const string Register = Base + "/identity/register";
         }
 
+        public static class Users
+        {
+            public const string Get = Base + "/identity/register/{username}";
+
+            public const string Update = Base + "/identity/register/{username}";
+
+            public static class Ads
+            {
+                public const string GetAll = Base + "/identity/register/{username}/ads";
+            }
+
+        }
         
         public static class Ads
         {
@@ -35,8 +47,6 @@
             public const string GetAll = Base + "/categories";
 
             public const string Get = Base + "/categories/{categoryId}";
-            
-            public const string GetWithAds = Base + "/categories/{categoryId}/ads";
             
             public const string Create = Base + "/categories";
             

@@ -5,6 +5,7 @@ using API.Contracts.V1;
 using API.Models.Category;
 using API.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Category
@@ -33,6 +34,7 @@ namespace API.Controllers.V1.Category
         }
 
         [HttpGet(ApiRoutes.Categories.GetAll)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _categoryService.GetCategoriesAsync();
@@ -42,6 +44,7 @@ namespace API.Controllers.V1.Category
         }
 
         [HttpGet(ApiRoutes.Categories.Get)]
+        [AllowAnonymous]
         public async Task<IActionResult> Get([FromRoute]Guid categoryId)
         {
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);

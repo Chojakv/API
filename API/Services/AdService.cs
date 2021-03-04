@@ -20,8 +20,9 @@ namespace API.Services
             _dataContext = dataContext;
         }
 
-        public async Task<bool> CreateAdAsync(Ad adModel)
+        public async Task<bool> CreateAdAsync(string userId, Ad adModel)
         {
+            adModel.UserId = userId;
             await _dataContext.AddAsync(adModel);
             
             return await _dataContext.SaveChangesAsync() > 0;
@@ -54,7 +55,6 @@ namespace API.Services
             ad.LastEditedDate = DateTime.UtcNow;
             
             return await _dataContext.SaveChangesAsync() > 0;
-            
         }
 
         public async Task<bool> DeleteAdAsync(Guid adId)
@@ -65,6 +65,23 @@ namespace API.Services
                 return false;
             _dataContext.Ads.Remove(ad);
             return await _dataContext.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UserOwnsPostAsync(Guid adId, string getUserId)
+        {
+            var ad = await _dataContext.Ads.AsNoTracking().SingleOrDefaultAsync(x => x.Id == adId);
+            
+            if (ad == null)
+            {
+                return false;
+            }
+
+            if (ad.UserId != getUserId)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

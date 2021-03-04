@@ -128,6 +128,7 @@ namespace API
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
 
+            app.UseAuthorization();
             app.UseAuthentication();
             app.UseCors("CorsPolicy");
             
