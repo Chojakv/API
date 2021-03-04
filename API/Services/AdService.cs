@@ -83,5 +83,10 @@ namespace API.Services
 
             return true;
         }
+
+        public async Task<IEnumerable<Ad>> GetUserAds(string username)
+        {
+            return await _dataContext.Ads.Where(x => x.User.UserName == username).ToListAsync();
+        }
     }
 }
