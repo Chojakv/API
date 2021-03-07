@@ -18,7 +18,10 @@ namespace API.MappingProfiles
             CreateMap<AdDetailsModel, Ad>().ReverseMap();
             CreateMap<AdUpdateModel, Ad>().ReverseMap();
             CreateMap<AdUpdateModel, AdDetailsModel>().ReverseMap();
+            CreateMap<AdUpdateModel, AppUser>().ReverseMap();
 
+            CreateMap<AppUser, AppUserDetailsModel>();
+            CreateMap<AppUser, AppUserUpdateModel>();
 
         }
     }

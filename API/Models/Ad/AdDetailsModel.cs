@@ -1,4 +1,5 @@
 using System;
+using API.Models.AppUser;
 
 namespace API.Models.Ad
 {
@@ -21,7 +22,7 @@ namespace API.Models.Ad
         public DateTime LastEditedDate { get; set; }
         
         public Guid CategoryId { get; set; }
-        
+
         public string UserId { get; set; }
     }
 }

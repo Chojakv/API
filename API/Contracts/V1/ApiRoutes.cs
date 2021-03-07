@@ -10,19 +10,19 @@
         public static class Identity
         {
             public const string Login = Base + "/identity/login";
-
+        
             public const string Register = Base + "/identity/register";
         }
 
         public static class Users
         {
-            public const string Get = Base + "/identity/register/{username}";
+            public const string Get = Base + "/users/{username}";
 
-            public const string Update = Base + "/identity/register/{username}";
+            public const string Update = Base + "/users/{username}";
 
             public static class Ads
             {
-                public const string GetAll = Base + "/identity/register/{username}/ads";
+                public const string GetAll = Base + "/users/{username}/ads";
             }
 
         }

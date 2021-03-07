@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
 using API.Models.Category;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -29,7 +30,7 @@ namespace API.Services
 
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
-            return await _dataContext.Categories.Include(x=>x.Ads).ToListAsync();
+            return await _dataContext.Categories.ToListAsync();
         }
 
         public async Task<Category> GetCategoryByIdAsync(Guid categoryId)

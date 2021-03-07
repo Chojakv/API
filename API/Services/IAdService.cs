@@ -14,7 +14,8 @@ namespace API.Services
         Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId);
         Task<bool> UpdateAdAsync(AdUpdateModel adModel);
         Task<bool> DeleteAdAsync(Guid adId);
-        Task<bool> UserOwnsPostAsync(Guid adId, string getUserId);
-        
+        Task<bool> UserOwnsPostAsync(Guid adId, string getUserId); 
+        Task<IEnumerable<Ad>> GetUserAds(string username);
+
     }
 }
