@@ -14,8 +14,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 
 namespace API
@@ -49,7 +53,13 @@ namespace API
                         .AllowAnyHeader()
                     );
             });
-            
+
+            services.AddMvc().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
+
+            services.AddControllers();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IIdentityService, IdentityService>();

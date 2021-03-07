@@ -8,11 +8,14 @@ namespace API.Domain
     {
         [Key]
         public Guid Id { get; set; }
-
+        [MaxLength(60, ErrorMessage = "Title is too long. Max 60 chars.")]
         public string Title { get; set; }
+        [MaxLength(50, ErrorMessage = "Author name is too long. Max 30 chars.")]
         public string Author { get; set; }
-        
+        [MaxLength(60, ErrorMessage = "BookName is too long. Max 30 chars.")]
         public string BookName { get; set; }
+        
+        [MaxLength(350, ErrorMessage = "Content is too long. Max 350 chars.")]
         public string Content { get; set; }
         public float Price { get; set; }
 

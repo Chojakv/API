@@ -7,12 +7,14 @@ using API.Models.Ad;
 using API.Models.AppUser;
 using API.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Users
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -27,6 +29,7 @@ namespace API.Controllers.V1.Users
         }
 
         [HttpGet(ApiRoutes.Users.Get)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUserByName([FromRoute]string username)
         {
             var user = await _userService.GetUserByNameAsync(username);
@@ -49,7 +52,7 @@ namespace API.Controllers.V1.Users
                 return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
             }
 
-            return NotFound("Ads does not exists");
+            return NotFound("This user does not have any ads");
         }
     }
 }

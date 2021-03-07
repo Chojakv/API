@@ -22,7 +22,7 @@ namespace API.Controllers.V1.Identity
 
 
         [HttpPost(ApiRoutes.Identity.Register)]
-        public async Task<IActionResult> Register([FromForm]AppUserRegistrationModel registrationModel)
+        public async Task<IActionResult> Register([FromBody]AppUserRegistrationModel registrationModel)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +49,7 @@ namespace API.Controllers.V1.Identity
         }
 
         [HttpPost(ApiRoutes.Identity.Login)]
-        public async Task<IActionResult> Login([FromForm] AppUserLoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] AppUserLoginModel loginModel)
         {
             var authenticationResponse = await _identityService.LoginAsync(loginModel.Email, loginModel.Password);
 

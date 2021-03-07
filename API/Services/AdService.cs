@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
 using API.Models.Ad;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services
@@ -45,8 +47,10 @@ namespace API.Services
         public async Task<bool> UpdateAdAsync(AdUpdateModel adModel)
         {
             var ad = await _dataContext.Ads.FirstOrDefaultAsync(x => x.Id == adModel.Id);
+            
             if (ad == null)
                 return false;
+            
             ad.Title = adModel.Title;
             ad.Author = adModel.Author;
             ad.BookName = adModel.BookName;
