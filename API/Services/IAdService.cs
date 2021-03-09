@@ -10,9 +10,10 @@ namespace API.Services
     {
         Task<bool> CreateAdAsync(string userId, Ad adModel);
         Task<IEnumerable<Ad>> GetAdsAsync();
+        Task<IEnumerable<Ad>> GetAdsAsync(string bookname, string title, string author);
         Task<Ad> GetAdByIdAsync(Guid adId);
         Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId);
-        Task<bool> UpdateAdAsync(AdUpdateModel adModel);
+        Task<bool> UpdateAdAsync(Guid adId, AdUpdateModel adModel);
         Task<bool> DeleteAdAsync(Guid adId);
         Task<bool> UserOwnsPostAsync(Guid adId, string getUserId); 
         Task<IEnumerable<Ad>> GetUserAds(string username);

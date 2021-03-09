@@ -21,7 +21,7 @@ namespace API.MappingProfiles
             CreateMap<AdUpdateModel, AppUser>().ReverseMap();
 
             CreateMap<AppUser, AppUserDetailsModel>();
-            CreateMap<AppUser, AppUserUpdateModel>();
+            CreateMap<AppUser, AppUserUpdateModel>().ReverseMap();
 
         }
     }

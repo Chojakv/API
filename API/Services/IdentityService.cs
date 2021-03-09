@@ -123,6 +123,7 @@ namespace API.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("Username",user.UserName),
                 new Claim("Id", user.Id)
             };
 

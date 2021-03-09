@@ -15,6 +15,8 @@ namespace API.Models.Ad
         public string Content { get; set; }
         
         public float Price { get; set; }
+
+        public IFormFile PictureAttached { get; set; }
         
         public Guid CategoryId { get; set; }
         

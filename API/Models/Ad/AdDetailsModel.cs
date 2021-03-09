@@ -17,6 +17,8 @@ namespace API.Models.Ad
         
         public float Price { get; set; }
 
+        public string PictureAttached { get; set; }
+
         public DateTime CreationDate { get; set; }
 
         public DateTime LastEditedDate { get; set; }
@@ -24,5 +26,9 @@ namespace API.Models.Ad
         public Guid CategoryId { get; set; }
 
         public string UserId { get; set; }
+        
+        public AppUserDetailsModel User { get; set; }
+
+
     }
 }
