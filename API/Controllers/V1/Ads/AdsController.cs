@@ -72,9 +72,9 @@ namespace API.Controllers.V1.Ads
 
         [HttpGet(ApiRoutes.Ads.GetAll)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string bookname, string title, string author)
         {
-            var ads = await _adService.GetAdsAsync();
+            var ads = await _adService.GetAdsAsync(bookname, title, author);
             
             if (ads.Any())
             {
@@ -99,20 +99,20 @@ namespace API.Controllers.V1.Ads
         }
 
         [HttpPatch(ApiRoutes.Ads.Update)]
-        public async Task<IActionResult> Update([FromForm] AdUpdateModel model)
+        public async Task<IActionResult> Update([FromRoute]Guid adId,[FromForm] AdUpdateModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
         
-            var userOwnsPost = await _adService.UserOwnsPostAsync(model.Id, HttpContext.GetUserId());
+            var userOwnsPost = await _adService.UserOwnsPostAsync(adId, HttpContext.GetUserId());
             if (!userOwnsPost)
             {
                 return BadRequest(new { error = "You do not own this post." });
             }
         
-            var result = await _adService.UpdateAdAsync(model);
+            var result = await _adService.UpdateAdAsync(adId, model);
             
             if (result)
             {
