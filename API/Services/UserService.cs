@@ -47,10 +47,7 @@ namespace API.Services
             {
                 user.Email = model.Email;
             }
-            // user.Name = model.Name;
-            // user.Lastname = model.Lastname;
-            // user.Email = model.Email;
-            
+
             await _userManager.UpdateAsync(user);
         
             return await _dataContext.SaveChangesAsync() > 0;

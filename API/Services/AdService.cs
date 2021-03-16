@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 
 namespace API.Services
 {
@@ -34,44 +36,39 @@ namespace API.Services
         {
             return await _dataContext.Ads.ToListAsync();
         }
-        
-        public async Task<IEnumerable<Ad>> GetAdsAsync(string bookname, string title, string author)
+
+        public async Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters)
         {
-            if (string.IsNullOrWhiteSpace(bookname) && string.IsNullOrWhiteSpace(title) && string.IsNullOrWhiteSpace(author))
+
+            if (filters.MaxPrice == 0 && filters.MinPrice == 0 && filters.Condition == Cond.All && string.IsNullOrWhiteSpace(filters.Bookname) && string.IsNullOrWhiteSpace(filters.Title) && string.IsNullOrWhiteSpace(filters.Author))
             {
-                return await _dataContext.Ads.ToListAsync();
+                return await _dataContext.Ads.Include(x=>x.User).ToListAsync();
             }
 
             var collection = _dataContext.Ads as IQueryable<Ad>;
 
-            if (!string.IsNullOrWhiteSpace(bookname))
-            {
-                bookname = bookname.Trim();
-                collection = collection.Where(x => x.BookName.Contains(bookname));
-            }
-        
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                title = title.Trim();
-                collection = collection.Where(x => x.Title.Contains(title));
-            }
-
-            if (string.IsNullOrWhiteSpace(author)) return await collection.ToListAsync();
-            {
-                author = author.Trim();
-                collection = collection.Where(x => x.Author.Contains(author));
-            }
-
+            collection = GetFilers(filters, collection);
+            
             return await collection.ToListAsync();
+            
         }
-
+        
         public async Task<Ad> GetAdByIdAsync(Guid adId)
         {
             return await _dataContext.Ads.Include(x=>x.User).FirstOrDefaultAsync(x =>x.Id == adId);
         }
-        public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId)
+        
+        public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters)
         {
-            return await _dataContext.Ads.Where(x=>x.CategoryId == categoryId).ToListAsync();
+            if (filters.MaxPrice == 0 && filters.MinPrice == 0 && filters.Condition == Cond.All && string.IsNullOrWhiteSpace(filters.Bookname) && string.IsNullOrWhiteSpace(filters.Title) && string.IsNullOrWhiteSpace(filters.Author))
+            {
+                return await _dataContext.Ads.Where(x=>x.CategoryId == categoryId).Include(x=>x.User).ToListAsync();
+            }
+            var collection = _dataContext.Ads as IQueryable<Ad>;
+
+            collection = GetFilers(filters, collection);
+            
+            return await collection.Where(x=>x.CategoryId == categoryId).ToListAsync();
         }
 
         public async Task<bool> UpdateAdAsync(Guid adId, AdUpdateModel adModel)
@@ -81,23 +78,11 @@ namespace API.Services
             if (ad == null)
                 return false;
 
-            if (adModel.Title == null)
-            {
-                ad.Title = ad.Title;
-            }
-            else{ ad.Title = adModel.Title;}
+            ad.Title = adModel.Title ?? ad.Title;
             
-            if (adModel.Author == null)
-            {
-                ad.Author = ad.Author;
-            }
-            else{ ad.Author = adModel.Author;}
+            ad.Author = adModel.Author ?? ad.Author;
             
-            if (adModel.BookName == null)
-            {
-                ad.BookName = ad.BookName;
-            }
-            else{ ad.BookName = adModel.BookName;}
+            ad.BookName = adModel.BookName ?? ad.BookName;
 
             ad.Price = adModel.Price;
             ad.LastEditedDate = DateTime.UtcNow;
@@ -132,9 +117,62 @@ namespace API.Services
             return true;
         }
 
-        public async Task<IEnumerable<Ad>> GetUserAds(string username)
+        public async Task<IEnumerable<Ad>> GetUserAdsAsync(string username)
         {
             return await _dataContext.Ads.Where(x => x.User.UserName == username).ToListAsync();
         }
+        
+        
+        private static IQueryable<Ad> GetFilers(GetAllAdsFilters filters, IQueryable<Ad> collection)
+        {
+            
+            collection = filters.Condition switch
+            {
+                Cond.New => collection.Where(x => x.Condition == Condition.New),
+                Cond.Used => collection.Where(x => x.Condition == Condition.Used),
+                _ => collection
+            };
+            
+            if (filters.MaxPrice != 0 && filters.MinPrice != 0)
+            {
+                collection = collection.Where(x => x.Price <= filters.MaxPrice && x.Price >= filters.MinPrice);
+            }
+
+            if (filters.MinPrice != 0)
+            {
+                collection = collection.Where(x => x.Price >= filters.MinPrice);
+            }
+            
+            if (filters.MaxPrice != 0)
+            {
+                collection = collection.Where(x => x.Price <= filters.MaxPrice);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filters.Bookname))
+            {
+                filters.Bookname = filters.Bookname.Trim();
+                collection = collection.Where(x => x.BookName.Contains(filters.Bookname));
+            }
+            
+            if (!string.IsNullOrWhiteSpace(filters.Author))
+            {
+                filters.Author = filters.Author.Trim();
+                collection = collection.Where(x => x.Title.Contains(filters.Author));
+            }
+            
+            if (!string.IsNullOrWhiteSpace(filters.Title)) 
+            {
+                filters.Title = filters.Title.Trim();
+                collection = collection.Where(x => x.Author.Contains(filters.Title));
+            }
+            
+            return collection;
+        }
+
+        public enum Cond
+        {
+            All, New, Used
+        }
+        
     }
 }

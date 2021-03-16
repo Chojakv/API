@@ -1,4 +1,5 @@
-﻿using API.Domain;
+﻿using API.Contracts.Requests.Queries;
+using API.Domain;
 using API.Models.Ad;
 using API.Models.AppUser;
 using API.Models.Category;
@@ -22,6 +23,9 @@ namespace API.MappingProfiles
 
             CreateMap<AppUser, AppUserDetailsModel>();
             CreateMap<AppUser, AppUserUpdateModel>().ReverseMap();
+
+
+            CreateMap<GetAllAdsQueries, GetAllAdsFilters>();
 
         }
     }

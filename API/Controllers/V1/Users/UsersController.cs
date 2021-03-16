@@ -48,7 +48,7 @@ namespace API.Controllers.V1.Users
         [HttpGet(ApiRoutes.Users.Ads.GetAll)]
         public async Task<IActionResult> GetUserAds(string username)
         {
-            var ads = await _adService.GetUserAds(username);
+            var ads = await _adService.GetUserAdsAsync(username);
 
             if (ads.Any())
             {

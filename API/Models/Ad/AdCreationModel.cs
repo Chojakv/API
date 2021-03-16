@@ -1,4 +1,5 @@
 using System;
+using API.Domain;
 using API.Extensions;
 using Microsoft.AspNetCore.Http;
 
@@ -6,6 +7,8 @@ namespace API.Models.Ad
 {
     public class AdCreationModel
     {
+        public Condition Condition { get; set; }
+        
         public string Title { get; set; }
         
         public string Author { get; set; }
