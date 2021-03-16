@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Identity
 {
+    [ApiController]
     public class IdentityController : ControllerBase
     {
         private readonly IIdentityService _identityService;
@@ -24,13 +25,6 @@ namespace API.Controllers.V1.Identity
         [HttpPost(ApiRoutes.Identity.Register)]
         public async Task<IActionResult> Register([FromBody]AppUserRegistrationModel registrationModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new RegisterResult
-                {
-                    Errors = ModelState.Values.SelectMany(x =>x.Errors.Select(xx=>xx.ErrorMessage))
-                });
-            }
             var authenticationResponse = await _identityService.RegisterAsync(registrationModel.UserName, registrationModel.Email, registrationModel.Password);
 
             if (!authenticationResponse.Success)

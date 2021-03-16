@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Category
 {
+    [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {

@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace API.Controllers.V1.Ads
 {
+    [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AdsController : ControllerBase
     {
@@ -29,6 +30,7 @@ namespace API.Controllers.V1.Ads
         
         public AdsController(IAdService adService, IMapper mapper)
         {
+            
             _adService = adService;
             _mapper = mapper;
         }
@@ -36,11 +38,6 @@ namespace API.Controllers.V1.Ads
         [HttpPost(ApiRoutes.Ads.Create)]
         public async Task<IActionResult> Create([FromForm] AdCreationModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
                 var create = _mapper.Map<Ad>(model);
@@ -105,11 +102,7 @@ namespace API.Controllers.V1.Ads
         [HttpPatch(ApiRoutes.Ads.Update)]
         public async Task<IActionResult> Update([FromRoute]Guid adId,[FromForm] AdUpdateModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-        
+            
             var userOwnsPost = await _adService.UserOwnsPostAsync(adId, HttpContext.GetUserId());
             if (!userOwnsPost)
             {
