@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
+using API.Filters;
 using API.Options;
 using API.Services;
 using FluentValidation.AspNetCore;
@@ -80,7 +81,11 @@ namespace API
             };
             services.AddSingleton(jwtSettings);
             
-            services.AddMvc(options => { options.EnableEndpointRouting = false; })
+            services.AddMvc(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                    options.Filters.Add<ValidationFilter>();
+                })
                 .AddFluentValidation(mvcConfiguration => mvcConfiguration.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
                 
