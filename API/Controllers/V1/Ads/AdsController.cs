@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Contracts.Requests.Queries;
 using API.Contracts.V1;
 using API.Data;
 using API.Domain;
@@ -50,7 +51,7 @@ namespace API.Controllers.V1.Ads
 
                 return CreatedAtAction(nameof(Get), new {adId = create.Id, userId = create.UserId}, result);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error.");
             }
@@ -72,10 +73,11 @@ namespace API.Controllers.V1.Ads
 
         [HttpGet(ApiRoutes.Ads.GetAll)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] string bookname, string title, string author)
+        public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries)
         {
-            var ads = await _adService.GetAdsAsync(bookname, title, author);
-            
+            var filters = _mapper.Map<GetAllAdsFilters>(queries);
+
+            var ads = await _adService.GetAdsAsync(filters);
             if (ads.Any())
             {
                 return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
@@ -86,9 +88,11 @@ namespace API.Controllers.V1.Ads
         
         [HttpGet(ApiRoutes.Ads.GetByCategory)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId)
+        public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries)
         {
-            var ads = await _adService.GetAdsByCategory(categoryId);
+            var filers = _mapper.Map<GetAllAdsFilters>(queries);
+            
+            var ads = await _adService.GetAdsByCategory(categoryId, filers);
             
             if (ads.Any())  
             {
@@ -122,7 +126,6 @@ namespace API.Controllers.V1.Ads
             return NotFound("Such ad does not exists.");
         }
         
-
         [HttpDelete(ApiRoutes.Ads.Delete)]
         public async Task<IActionResult> Delete([FromRoute]Guid adId)
         {
@@ -142,8 +145,5 @@ namespace API.Controllers.V1.Ads
             
             return NotFound("Such ad does not exists.");
         }
-        
-        
-        
     }
 }

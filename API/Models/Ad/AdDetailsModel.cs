@@ -1,4 +1,5 @@
 using System;
+using API.Domain;
 using API.Models.AppUser;
 
 namespace API.Models.Ad
@@ -6,6 +7,8 @@ namespace API.Models.Ad
     public class AdDetailsModel
     {
         public Guid Id { get; set; }
+
+        public Condition Condition { get; set; }
 
         public string Title { get; set; }
         
