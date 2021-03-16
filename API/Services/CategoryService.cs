@@ -36,7 +36,6 @@ namespace API.Services
         public async Task<Category> GetCategoryByIdAsync(Guid categoryId)
         {
             return await _dataContext.Categories.FirstOrDefaultAsync(x=>x.Id == categoryId);
-            //return await _dataContext.Categories.Include(x=>x.Ads).FirstOrDefaultAsync(x=>x.Id == categoryId);
         }
         
         public async Task<bool> DeleteCategoryAsync(Guid categoryId)

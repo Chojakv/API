@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.Contracts.V1;
+using API.Data;
 using API.Models.Category;
 using API.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Category
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoryController : ControllerBase
     {
 
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
-
+        
         public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
             _categoryService = categoryService;
@@ -23,11 +27,12 @@ namespace API.Controllers.V1.Category
         }
         
         [HttpPost(ApiRoutes.Categories.Create)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
         {
             var create = _mapper.Map<Domain.Category>(model);
             await _categoryService.CreateCategoryAsync(create);
-        
+            
             var result = _mapper.Map<CategoryDetailsModel>(create);
         
             return CreatedAtAction("Get", new {categoryId = create.Id},result );

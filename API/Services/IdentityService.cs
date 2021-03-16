@@ -20,17 +20,17 @@ namespace API.Services
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly IMapper _mapper;
         private readonly JwtSettings _jwtSettings;
         private readonly DataContext _dataContext;
+        private readonly RoleManager<IdentityRole> _roleManager;
         
-        public IdentityService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMapper mapper, JwtSettings jwtSettings, DataContext dataContext)
+        public IdentityService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,JwtSettings jwtSettings, DataContext dataContext, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _mapper = mapper;
             _jwtSettings = jwtSettings;
             _dataContext = dataContext;
+            _roleManager = roleManager;
         }
 
         public async Task<RegisterResult> RegisterAsync(string username, string email, string password)
@@ -73,6 +73,8 @@ namespace API.Services
                 };
             }
 
+            await _userManager.AddToRoleAsync(newUser, "User");
+            
             var token = await GenerateTokenForUserAsync(newUser);
 
             return new RegisterResult
@@ -129,6 +131,21 @@ namespace API.Services
 
             var userClaims = await _userManager.GetClaimsAsync(user);
             claims.AddRange(userClaims);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+                var role = await _roleManager.FindByNameAsync(userRole);
+                if(role == null) continue;
+                var roleClaims = await _roleManager.GetClaimsAsync(role);
+                foreach (var roleClaim in roleClaims)
+                {
+                    if(claims.Contains(roleClaim))
+                        continue;
+                    claims.Add(roleClaim);
+                }
+            }
             
             var tokenDescriptor = new SecurityTokenDescriptor
             {
