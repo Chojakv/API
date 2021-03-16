@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
 using API.Options;
 using API.Services;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +23,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 
@@ -39,12 +44,13 @@ namespace API
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<AppUser, IdentityRole>(q=>q.User.RequireUniqueEmail = true)
+            services.AddIdentity<AppUser, IdentityRole>(
+                    q=>q.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<DataContext>();
             
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
+            
+            services.AddControllers();
+            
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
@@ -53,10 +59,10 @@ namespace API
                         .AllowAnyHeader()
                     );
             });
-
+            
             services.AddMvc().AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
             services.AddControllers();
@@ -75,7 +81,9 @@ namespace API
             services.AddSingleton(jwtSettings);
             
             services.AddMvc(options => { options.EnableEndpointRouting = false; })
+                .AddFluentValidation(mvcConfiguration => mvcConfiguration.RegisterValidatorsFromAssemblyContaining<Startup>())
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
+                
 
             var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
             {
@@ -98,12 +106,14 @@ namespace API
                     x.SaveToken = true;
                     x.TokenValidationParameters = tokenValidationParameters;
                 });
+
+            services.AddAuthorization();
             
             services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new OpenApiInfo { Title = "webAPI", Version = "v1" });
-                
-                
+
+
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
@@ -119,10 +129,12 @@ namespace API
                     }}, new List<string>()}
                 });
             });
+            
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -151,6 +163,24 @@ namespace API
             {
                 endpoints.MapControllers();
             });
+
+            Task.Run(() => this.CreateRole(roleManager)).Wait();
+        }
+        private async Task CreateRole(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                var adminRole = new IdentityRole("Admin");
+                await roleManager.CreateAsync(adminRole);
+            }
+            
+            if(!await roleManager.RoleExistsAsync("User"))
+            {
+                var userRole = new IdentityRole("User");
+                await roleManager.CreateAsync(userRole);
+            }
         }
     }
 }
