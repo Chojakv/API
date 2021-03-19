@@ -1,3 +1,4 @@
+using System;
 using API.Services;
 
 namespace API.Contracts.Requests.Queries
@@ -5,6 +6,8 @@ namespace API.Contracts.Requests.Queries
     public class GetAllAdsQueries
     {
         public AdService.Cond Condition { get; set; }
+
+        public string CategoryId { get; set; }
 
         public float MaxPrice { get; set; }
         

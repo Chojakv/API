@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
+using API.Filters;
 using API.Models.Ad;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -37,20 +39,14 @@ namespace API.Services
             return await _dataContext.Ads.ToListAsync();
         }
 
-        public async Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters)
+        public async Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging)
         {
-
-            if (filters.MaxPrice == 0 && filters.MinPrice == 0 && filters.Condition == Cond.All && string.IsNullOrWhiteSpace(filters.Bookname) && string.IsNullOrWhiteSpace(filters.Title) && string.IsNullOrWhiteSpace(filters.Author))
-            {
-                return await _dataContext.Ads.Include(x=>x.User).ToListAsync();
-            }
-
+            
             var collection = _dataContext.Ads as IQueryable<Ad>;
 
-            collection = GetFilers(filters, collection);
-            
+            collection = GetFilers(filters, paging, collection);
+
             return await collection.ToListAsync();
-            
         }
         
         public async Task<Ad> GetAdByIdAsync(Guid adId)
@@ -58,15 +54,11 @@ namespace API.Services
             return await _dataContext.Ads.Include(x=>x.User).FirstOrDefaultAsync(x =>x.Id == adId);
         }
         
-        public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters)
+        public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging)
         {
-            if (filters.MaxPrice == 0 && filters.MinPrice == 0 && filters.Condition == Cond.All && string.IsNullOrWhiteSpace(filters.Bookname) && string.IsNullOrWhiteSpace(filters.Title) && string.IsNullOrWhiteSpace(filters.Author))
-            {
-                return await _dataContext.Ads.Where(x=>x.CategoryId == categoryId).Include(x=>x.User).ToListAsync();
-            }
             var collection = _dataContext.Ads as IQueryable<Ad>;
 
-            collection = GetFilers(filters, collection);
+            collection = GetFilers(filters, paging, collection);
             
             return await collection.Where(x=>x.CategoryId == categoryId).ToListAsync();
         }
@@ -123,15 +115,19 @@ namespace API.Services
         }
         
         
-        private static IQueryable<Ad> GetFilers(GetAllAdsFilters filters, IQueryable<Ad> collection)
+        private  static IQueryable<Ad> GetFilers(GetAllAdsFilters filters, PaginationFilters paging, IQueryable<Ad> collection)
         {
-            
             collection = filters.Condition switch
             {
                 Cond.New => collection.Where(x => x.Condition == Condition.New),
                 Cond.Used => collection.Where(x => x.Condition == Condition.Used),
                 _ => collection
             };
+
+            if (!string.IsNullOrEmpty(filters.CategoryId))
+            {
+                collection = collection.Where(x => x.CategoryId.ToString() == filters.CategoryId);
+            }
             
             if (filters.MaxPrice != 0 && filters.MinPrice != 0)
             {
@@ -166,7 +162,7 @@ namespace API.Services
                 collection = collection.Where(x => x.Author.Contains(filters.Title));
             }
             
-            return collection;
+            return collection.Include(x=>x.User).Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
         }
 
         public enum Cond

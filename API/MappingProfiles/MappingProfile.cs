@@ -1,5 +1,6 @@
 ﻿using API.Contracts.Requests.Queries;
 using API.Domain;
+using API.Filters;
 using API.Models.Ad;
 using API.Models.AppUser;
 using API.Models.Category;
@@ -26,6 +27,7 @@ namespace API.MappingProfiles
 
 
             CreateMap<GetAllAdsQueries, GetAllAdsFilters>();
+            CreateMap<PaginationQuery, PaginationFilters>();
 
         }
     }

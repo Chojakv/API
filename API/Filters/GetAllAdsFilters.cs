@@ -1,11 +1,13 @@
+using System;
 using API.Services;
 
-namespace API.Domain
+namespace API.Filters
 {
     public class GetAllAdsFilters
     {
         public AdService.Cond Condition { get; set; }
 
+        public string CategoryId { get; set; }
         public float MaxPrice { get; set; }
         
         public float MinPrice { get; set; }

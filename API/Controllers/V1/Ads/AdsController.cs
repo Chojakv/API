@@ -8,6 +8,7 @@ using API.Contracts.V1;
 using API.Data;
 using API.Domain;
 using API.Extensions;
+using API.Filters;
 using API.Models.Ad;
 using API.Services;
 using AutoMapper;
@@ -70,11 +71,13 @@ namespace API.Controllers.V1.Ads
 
         [HttpGet(ApiRoutes.Ads.GetAll)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries)
+        public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries, [FromQuery] PaginationQuery pagingQuery)
         {
             var filters = _mapper.Map<GetAllAdsFilters>(queries);
 
-            var ads = await _adService.GetAdsAsync(filters);
+            var paging = _mapper.Map<PaginationFilters>(pagingQuery);
+            
+            var ads = await _adService.GetAdsAsync(filters, paging);
             if (ads.Any())
             {
                 return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
@@ -85,11 +88,12 @@ namespace API.Controllers.V1.Ads
         
         [HttpGet(ApiRoutes.Ads.GetByCategory)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries)
+        public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries, [FromQuery]PaginationQuery pagingQuery)
         {
             var filers = _mapper.Map<GetAllAdsFilters>(queries);
+            var paging = _mapper.Map<PaginationFilters>(pagingQuery);
             
-            var ads = await _adService.GetAdsByCategory(categoryId, filers);
+            var ads = await _adService.GetAdsByCategory(categoryId, filers, paging);
             
             if (ads.Any())  
             {
