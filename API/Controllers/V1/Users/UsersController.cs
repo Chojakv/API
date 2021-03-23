@@ -1,18 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using API.Contracts.V1;
-using API.Domain;
-using API.Extensions;
 using API.Models.Ad;
 using API.Models.AppUser;
 using API.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Users
@@ -23,14 +16,12 @@ namespace API.Controllers.V1.Users
         private readonly IUserService _userService;
         private readonly IAdService _adService;
         private readonly IMapper _mapper;
-        private readonly UserManager<AppUser> _userManager;
 
-        public UsersController(IUserService userService, IMapper mapper, IAdService adService, UserManager<AppUser> userManager)
+        public UsersController(IUserService userService, IMapper mapper, IAdService adService)
         {
             _userService = userService;
             _mapper = mapper;
             _adService = adService;
-            _userManager = userManager;
         }
 
         [HttpGet(ApiRoutes.Users.Get)]

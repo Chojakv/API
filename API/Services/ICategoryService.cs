@@ -9,10 +9,10 @@ namespace API.Services
 {
     public interface ICategoryService
     { 
-        Task<bool> CreateCategoryAsync(Category categoryModel);
+        Task<PayloadResult<Category>> CreateCategoryAsync(CategoryCreationModel categoryModel);
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(Guid categoryId);
-        Task<bool> DeleteCategoryAsync(Guid categoryId);
+        Task<BaseRequestResult> DeleteCategoryAsync(Guid categoryId);
         
 
     }

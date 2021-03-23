@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
+using API.Models.Ad;
 using API.Models.Category;
+using AutoMapper;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -14,17 +16,37 @@ namespace API.Services
     public class CategoryService : ICategoryService
     {
         private readonly DataContext _dataContext;
+        private readonly IMapper _mapper;
 
-        public CategoryService(DataContext dataContext)
+        public CategoryService(DataContext dataContext, IMapper mapper)
         {
             _dataContext = dataContext;
+            _mapper = mapper;
         }
         
-        public async Task<bool> CreateCategoryAsync(Category categoryModel)
+        public async Task<PayloadResult<Category>> CreateCategoryAsync(CategoryCreationModel categoryModel)
         {
-            await _dataContext.AddAsync(categoryModel);
+            var category = new Category
+            {
+                Name = categoryModel.Name
+            };
+            
+            await _dataContext.AddAsync(category);
              
-            return await _dataContext.SaveChangesAsync() > 0;
+            var create = await _dataContext.SaveChangesAsync() > 0;
+
+            if (!create)
+                return new PayloadResult<Category>
+                {
+                    Errors = new[] {"Could not save changes."},
+                    Success = false
+                };
+            
+
+            return new PayloadResult<Category>
+            {
+                Payload = category
+            };
         }
         
 
@@ -38,15 +60,31 @@ namespace API.Services
             return await _dataContext.Categories.FirstOrDefaultAsync(x=>x.Id == categoryId);
         }
         
-        public async Task<bool> DeleteCategoryAsync(Guid categoryId)
+        public async Task<BaseRequestResult> DeleteCategoryAsync(Guid categoryId)
         {
             var category = await GetCategoryByIdAsync(categoryId);
 
             if (category == null)
-                return false;
+                return new RegisterResult
+                {
+                    Errors = new[] {$"Category with id '{categoryId}' does not exists."}
+                };
 
             _dataContext.Categories.Remove(category);
-            return await _dataContext.SaveChangesAsync() > 0;
+            
+            var delete = await _dataContext.SaveChangesAsync() > 0;
+
+            if (!delete)
+                return new BaseRequestResult
+                {
+                    Errors = new[] {"Could not save changes."},
+                    Success = false
+                };
+
+            return new BaseRequestResult
+            {
+                Success = true
+            };
         }
         
     }

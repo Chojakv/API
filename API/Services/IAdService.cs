@@ -10,15 +10,14 @@ namespace API.Services
 {
     public interface IAdService
     {
-        Task<bool> CreateAdAsync(string userId, Ad adModel);
-        
+        Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel);
         Task<IEnumerable<Ad>> GetAdsAsync();
-        Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging);
+        Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging, string sort);
         Task<Ad> GetAdByIdAsync(Guid adId);
         Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging);
-        Task<bool> UpdateAdAsync(Guid adId, AdUpdateModel adModel);
-        Task<bool> DeleteAdAsync(Guid adId);
-        Task<bool> UserOwnsPostAsync(Guid adId, string getUserId); 
+        Task<PayloadResult<Ad>> UpdateAdAsync(Guid adId, AdUpdateModel adModel);
+        Task<BaseRequestResult> DeleteAdAsync(Guid adId);
+        Task<BaseRequestResult> UserOwnsPostAsync(Guid adId, string getUserId); 
         Task<IEnumerable<Ad>> GetUserAdsAsync(string username);
 
     }

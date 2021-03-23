@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Contracts.Requests.Queries;
 using API.Contracts.V1;
-using API.Data;
 using API.Domain;
 using API.Extensions;
 using API.Filters;
@@ -14,10 +13,8 @@ using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace API.Controllers.V1.Ads
 {
@@ -28,31 +25,26 @@ namespace API.Controllers.V1.Ads
 
         private readonly IAdService _adService;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IUriService _uriService;
         
-        public AdsController(IAdService adService, IMapper mapper)
+        public AdsController(IAdService adService, IMapper mapper, IWebHostEnvironment webHostEnvironment, IUriService uriService)
         {
             
             _adService = adService;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
+            _uriService = uriService;
         }
-
+        
         [HttpPost(ApiRoutes.Ads.Create)]
         public async Task<IActionResult> Create([FromForm] AdCreationModel model)
         {
-            try
-            {
-                var create = _mapper.Map<Ad>(model);
+            var create = await _adService.CreateAdAsync(HttpContext.GetUserId(), model);
+            
+            var locationUri = _uriService.GetAdUri(create.Payload.Id.ToString());
 
-                await _adService.CreateAdAsync(HttpContext.GetUserId(), create);
-
-                var result = _mapper.Map<AdDetailsModel>(create);
-
-                return CreatedAtAction(nameof(Get), new {adId = create.Id, userId = create.UserId}, result);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "Internal server error.");
-            }
+            return Created(locationUri, _mapper.Map<AdDetailsModel>(create.Payload));
         }
 
         [HttpGet(ApiRoutes.Ads.Get)]
@@ -65,24 +57,22 @@ namespace API.Controllers.V1.Ads
             { 
                 return NotFound("Such ad does not exists.");
             }
-            
             return Ok(_mapper.Map<AdDetailsModel>(ad));
         }
 
         [HttpGet(ApiRoutes.Ads.GetAll)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries, [FromQuery] PaginationQuery pagingQuery)
+        public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries, [FromQuery] PaginationQuery pagingQuery, [FromQuery] string sort)
         {
             var filters = _mapper.Map<GetAllAdsFilters>(queries);
 
             var paging = _mapper.Map<PaginationFilters>(pagingQuery);
             
-            var ads = await _adService.GetAdsAsync(filters, paging);
+            var ads = await _adService.GetAdsAsync(filters, paging, sort);
             if (ads.Any())
             {
                 return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
             }
-
             return NotFound("Ads does not exists.");
         }
         
@@ -106,18 +96,16 @@ namespace API.Controllers.V1.Ads
         [HttpPatch(ApiRoutes.Ads.Update)]
         public async Task<IActionResult> Update([FromRoute]Guid adId,[FromForm] AdUpdateModel model)
         {
-            
             var userOwnsPost = await _adService.UserOwnsPostAsync(adId, HttpContext.GetUserId());
-            if (!userOwnsPost)
+            if (!userOwnsPost.Success)
             {
-                return BadRequest(new { error = "You do not own this post." });
+                return BadRequest(new { error = "You do not own this ad." });
             }
-        
-            var result = await _adService.UpdateAdAsync(adId, model);
+            var update = await _adService.UpdateAdAsync(adId, model);
             
-            if (result)
+            if (update.Success)
             {
-                return NoContent();
+                return Ok(_mapper.Map<AdDetailsModel>(update.Payload));
             }
             
             return NotFound("Such ad does not exists.");
@@ -128,14 +116,14 @@ namespace API.Controllers.V1.Ads
         {
             var userOwnsPost = await _adService.UserOwnsPostAsync(adId, HttpContext.GetUserId());
             
-            if (!userOwnsPost)
+            if (!userOwnsPost.Success)
             {
-                return BadRequest(new { error = "You do not own this post" });
+                return BadRequest(new { error = "You do not own this ad" });
             }
             
             var deleted = await _adService.DeleteAdAsync(adId);
 
-            if (deleted)
+            if (deleted.Success)
             {
                 return NoContent();
             }
