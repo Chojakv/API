@@ -20,23 +20,24 @@ namespace API.Controllers.V1.Category
 
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
+        private readonly IUriService _uriService;
         
-        public CategoryController(ICategoryService categoryService, IMapper mapper)
+        public CategoryController(ICategoryService categoryService, IMapper mapper, IUriService uriService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
+            _uriService = uriService;
         }
         
         [HttpPost(ApiRoutes.Categories.Create)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
         {
-            var create = _mapper.Map<Domain.Category>(model);
-            await _categoryService.CreateCategoryAsync(create);
-            
-            var result = _mapper.Map<CategoryDetailsModel>(create);
-        
-            return CreatedAtAction("Get", new {categoryId = create.Id},result );
+            var create = await _categoryService.CreateCategoryAsync(model);
+
+            var locationUri = _uriService.GetCategoryUri(create.Payload.Id.ToString());
+
+            return Created(locationUri, _mapper.Map<CategoryDetailsModel>(create.Payload));
         }
 
         [HttpGet(ApiRoutes.Categories.GetAll)]
@@ -66,7 +67,7 @@ namespace API.Controllers.V1.Category
         {
             var deleted = await _categoryService.DeleteCategoryAsync(categoryId);
             
-            if (deleted)
+            if (deleted.Success)
             {
                 return NoContent();
             }

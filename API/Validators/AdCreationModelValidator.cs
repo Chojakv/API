@@ -26,6 +26,9 @@ namespace API.Validators
                 .NotEmpty()
                 .MaximumLength(350)
                 .MinimumLength(10);
+
+            RuleFor(x => x.Price)
+                .GreaterThanOrEqualTo(0);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace API.Models.Ad
         public Guid CategoryId { get; set; }
 
         public string UserId { get; set; }
-        
+
         public AppUserDetailsModel User { get; set; }
 
 
