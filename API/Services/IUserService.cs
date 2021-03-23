@@ -7,10 +7,8 @@ namespace API.Services
     public interface IUserService
     {
         public Task<AppUser> GetUserByNameAsync(string username);
-
         public Task<AppUser> GetUserByIdAsync(string id);
-
-        public Task<bool> UpdateUserAsync(AppUser user, AppUserUpdateModel model);
+        public Task<PayloadResult<AppUser>> UpdateUserAsync(AppUser user, AppUserUpdateModel model);
         
     }
 }
