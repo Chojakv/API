@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
-using API.Models.Ad;
 using API.Models.Category;
 using AutoMapper;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API.Services
 {
@@ -26,10 +22,7 @@ namespace API.Services
         
         public async Task<PayloadResult<Category>> CreateCategoryAsync(CategoryCreationModel categoryModel)
         {
-            var category = new Category
-            {
-                Name = categoryModel.Name
-            };
+            var category = _mapper.Map<CategoryCreationModel, Category>(categoryModel);
             
             await _dataContext.AddAsync(category);
              
@@ -42,14 +35,12 @@ namespace API.Services
                     Success = false
                 };
             
-
             return new PayloadResult<Category>
             {
                 Payload = category
             };
         }
         
-
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
             return await _dataContext.Categories.ToListAsync();

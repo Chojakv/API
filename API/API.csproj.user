@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>API</ActiveDebugProfile>
+    <ActiveDebugProfile>Api8090</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

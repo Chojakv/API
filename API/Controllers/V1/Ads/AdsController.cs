@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Contracts.Requests.Queries;
 using API.Contracts.V1;
-using API.Domain;
 using API.Extensions;
 using API.Filters;
 using API.Models.Ad;

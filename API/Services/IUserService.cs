@@ -9,6 +9,6 @@ namespace API.Services
         public Task<AppUser> GetUserByNameAsync(string username);
         public Task<AppUser> GetUserByIdAsync(string id);
         public Task<PayloadResult<AppUser>> UpdateUserAsync(AppUser user, AppUserUpdateModel model);
-        
+
     }
 }

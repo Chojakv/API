@@ -77,7 +77,7 @@ namespace API.Services
                 Payload = user
             };
         }
-
+        
         private async Task<string> UploadProfileImage(AppUserUpdateModel model)
         {
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Avatars");
@@ -90,26 +90,5 @@ namespace API.Services
             return uniqueFileName;
         }
         
-        // public async Task<bool> UpdateUserAsync(AppUser user, AppUserUpdateModel model)
-        // {
-        //     
-        //     if (model.Name != null)
-        //     {
-        //         user.Name = model.Name;
-        //     }
-        //     if (model.Lastname != null)
-        //     {
-        //         user.Lastname = model.Lastname;
-        //     }
-        //     if (model.Email != null)
-        //     {
-        //         user.Email = model.Email;
-        //     }
-        //
-        //     await _userManager.UpdateAsync(user);
-        //
-        //     return await _dataContext.SaveChangesAsync() > 0;
-        // }
-
     }
 }
