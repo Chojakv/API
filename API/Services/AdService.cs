@@ -7,6 +7,7 @@ using API.Data;
 using API.Domain;
 using API.Filters;
 using API.Models.Ad;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,27 +17,20 @@ namespace API.Services
     {
         private readonly DataContext _dataContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment)
+        private readonly IMapper _mapper;
+        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
             _dataContext = dataContext;
             _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
         }
         
         public async Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel)
         {
-            var ad = new Ad
-            {
-                Title = adModel.Title,
-                Author = adModel.Author,
-                BookName = adModel.BookName,
-                Condition = adModel.Condition,
-                Content = adModel.Content,
-                Price = adModel.Price,
-                CategoryId = adModel.CategoryId,
-                CreationDate = DateTime.UtcNow,
-                UserId = userId,
-                User = await _dataContext.Users.FindAsync(userId)
-            };
+            var ad = _mapper.Map<AdCreationModel, Ad>(adModel);
+            ad.UserId = userId;
+            ad.User = await _dataContext.Users.FindAsync(userId);
+            ad.Category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == adModel.CategoryId);
 
             if (adModel.PictureAttached != null)
             {
@@ -52,7 +46,7 @@ namespace API.Services
             {
                 return new PayloadResult<Ad>
                 {
-                    Errors = new[] {"Couldn't create ad."},
+                    Errors = new[] {"Could not save changes."},
                     Success = false
                 };
             }
@@ -61,12 +55,7 @@ namespace API.Services
                 Payload = ad
             };
         }
-
-        public async Task<IEnumerable<Ad>> GetAdsAsync()
-        {
-            return await _dataContext.Ads.ToListAsync();
-        }
-
+        
         public async Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging, string sort)
         {
             var collection = _dataContext.Ads as IQueryable<Ad>;
@@ -80,7 +69,7 @@ namespace API.Services
         
         public async Task<Ad> GetAdByIdAsync(Guid adId)
         {
-            return await _dataContext.Ads.Include(x=>x.User).FirstOrDefaultAsync(x =>x.Id == adId);
+            return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).FirstOrDefaultAsync(x =>x.Id == adId);
         }
         
         public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging)
@@ -186,6 +175,7 @@ namespace API.Services
                 Success = true
             };
         }
+        
         public async Task<IEnumerable<Ad>> GetUserAdsAsync(string username)
         {
             return await _dataContext.Ads.Where(x => x.User.UserName == username).ToListAsync();
@@ -250,7 +240,7 @@ namespace API.Services
                 collection = collection.Where(x => x.Title.Contains(filters.Title));
             }
             
-            return collection.Include(x=>x.User).Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
+            return collection.Include(x=>x.User).Include(x=>x.Category).Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
         }
         private async Task<string> UploadAdImage(AdCreationModel model)
         {

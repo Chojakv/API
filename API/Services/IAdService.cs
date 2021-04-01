@@ -11,7 +11,6 @@ namespace API.Services
     public interface IAdService
     {
         Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel);
-        Task<IEnumerable<Ad>> GetAdsAsync();
         Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging, string sort);
         Task<Ad> GetAdByIdAsync(Guid adId);
         Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging);
