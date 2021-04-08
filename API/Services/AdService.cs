@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
 using API.Filters;
+using API.Models;
 using API.Models.Ad;
+using API.Models.Photo;
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace API.Services
 {
@@ -18,11 +23,13 @@ namespace API.Services
         private readonly DataContext _dataContext;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
-        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper)
+        private readonly IConfiguration _configuration;
+        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper, IConfiguration configuration)
         {
             _dataContext = dataContext;
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
+            _configuration = configuration;
         }
         
         public async Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel)
@@ -31,13 +38,34 @@ namespace API.Services
             ad.UserId = userId;
             ad.User = await _dataContext.Users.FindAsync(userId);
             ad.Category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == adModel.CategoryId);
-
+            
             if (adModel.PictureAttached != null)
             {
                 var filePath = UploadAdImage(adModel);
-                ad.PictureAttached =  await filePath;
+                ad.PictureAttached = await filePath;
             }
 
+            if (adModel.AdPhotos != null)
+            {
+                foreach (var image in adModel.AdPhotos)
+                {
+                    var photo = new PhotoDetailsModel
+                    {
+                        AdId = ad.Id,
+                        PhotoUrl = await UploadImage(image)
+                    };
+                    var mapped = _mapper.Map<Photo>(photo);
+                    ad.AdPhotos.Add(mapped);
+                    
+                    foreach (var nullAd in ad.AdPhotos)
+                    {
+                        if (nullAd.PhotoUrl != null) continue;
+                        ad.AdPhotos.Remove(nullAd);
+                        break;
+                    }
+                }
+            }
+            
             await _dataContext.AddAsync(ad);
         
             var success = await _dataContext.SaveChangesAsync() > 0;
@@ -69,7 +97,7 @@ namespace API.Services
         
         public async Task<Ad> GetAdByIdAsync(Guid adId)
         {
-            return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).FirstOrDefaultAsync(x =>x.Id == adId);
+            return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).Include(x=>x.AdPhotos).FirstOrDefaultAsync(x =>x.Id == adId);
         }
         
         public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging)
@@ -197,8 +225,8 @@ namespace API.Services
         {
             collection = filters.Condition switch
             {
-                Cond.New => collection.Where(x => x.Condition == Condition.New),
-                Cond.Used => collection.Where(x => x.Condition == Condition.Used),
+                Filters.Cond.New => collection.Where(x => x.Condition == Condition.New),
+                Filters.Cond.Used => collection.Where(x => x.Condition == Condition.Used),
                 _ => collection
             };
 
@@ -242,8 +270,23 @@ namespace API.Services
             
             return collection.Include(x=>x.User).Include(x=>x.Category).Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
         }
+        
+        
+        private async Task<string> UploadImage(IFormFile file)
+        {
+            string url = $"{_configuration.GetValue<string>("AdImageUrl")}";
+            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "AdImages");
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+            return url + uniqueFileName;
+        }
         private async Task<string> UploadAdImage(AdCreationModel model)
         {
+            string url = $"{_configuration.GetValue<string>("AdImageUrl")}";
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "AdImages");
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.PictureAttached.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -251,10 +294,11 @@ namespace API.Services
             {
                 await model.PictureAttached.CopyToAsync(fileStream);
             }
-            return uniqueFileName;
+            return url + uniqueFileName;
         }
         private async Task<string> UpdateAdImage(AdUpdateModel model)
         {
+            string url = $"{_configuration.GetValue<string>("AdImageUrl")}";
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "AdImages");
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.PictureAttached.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -262,7 +306,7 @@ namespace API.Services
             {
                 await model.PictureAttached.CopyToAsync(fileStream);
             }
-            return uniqueFileName;
+            return url + uniqueFileName;
         }
         public enum Cond
         {

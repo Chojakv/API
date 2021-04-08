@@ -9,6 +9,7 @@ namespace API.Domain
         {
             [Key] 
             public Guid Id { get; set; }
+            
             public string Name { get; set; }
             
             public virtual ICollection<Ad> Ads { get; set; } = new List<Ad>();

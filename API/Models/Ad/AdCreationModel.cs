@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using API.Domain;
 using Microsoft.AspNetCore.Http;
 
@@ -16,6 +18,7 @@ namespace API.Models.Ad
         public Guid CategoryId { get; set; }
         
         public DateTime CreationDate = DateTime.UtcNow;
-
+        
+        public ICollection<IFormFile> AdPhotos { get; set; }
     }
 }

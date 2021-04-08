@@ -26,7 +26,6 @@
             }
 
         }
-        
         public static class Ads
         {
             public const string GetAll = Base + "/ads";

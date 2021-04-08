@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using API.Data;
@@ -21,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 
 
 namespace API
@@ -62,11 +64,11 @@ namespace API
             });
 
             services.AddControllers();
+               
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IMessageService, MessageService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -153,7 +155,16 @@ namespace API
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/AdImages")),
+                RequestPath = "/wwwroot/AdImages"
+            });
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/Avatars")),
+                RequestPath = "/wwwroot/Avatars"
+            });
             app.UseRouting();
             
             var swaggerOptions = new SwaggerOptions();

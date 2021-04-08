@@ -4,9 +4,12 @@ using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
 using API.Models.AppUser;
+using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace API.Services
 {
@@ -15,12 +18,14 @@ namespace API.Services
         private readonly DataContext _dataContext;
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment)
+        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
+            _configuration = configuration;
         }
 
         public async Task<AppUser> GetUserByIdAsync(string id)
@@ -80,6 +85,7 @@ namespace API.Services
         
         private async Task<string> UploadProfileImage(AppUserUpdateModel model)
         {
+            string url = $"{_configuration.GetValue<string>("AvatarUrl")}";
             string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Avatars");
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -87,7 +93,7 @@ namespace API.Services
             {
                 await model.ProfileImage.CopyToAsync(fileStream);
             }
-            return uniqueFileName;
+            return url + uniqueFileName;
         }
         
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -24,7 +25,10 @@ namespace API.Domain
         
         [ForeignKey("User")] 
         public string UserId { get; set; }
+
         public AppUser User { get; set; }
+
+        public virtual ICollection<Photo> AdPhotos { get; set; } = new List<Photo>();
     }
     
     public enum Condition

@@ -5,7 +5,7 @@ namespace API.Contracts.Requests.Queries
 {
     public class GetAllAdsQueries
     {
-        public AdService.Cond Condition { get; set; }
+        public Cond Condition { get; set; }
 
         public string CategoryId { get; set; }
 
@@ -18,5 +18,10 @@ namespace API.Contracts.Requests.Queries
         public string Author { get; set; }
 
         public string Title { get; set; }
+    }
+    
+    public enum Cond
+    {
+        All, New, Used
     }
 }
