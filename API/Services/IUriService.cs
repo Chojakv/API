@@ -7,5 +7,7 @@ namespace API.Services
         Uri GetAdUri(string adId);
 
         Uri GetCategoryUri(string categoryId);
+        
+        Uri GetMessageUri(string messageId);
     }
 }

@@ -13,7 +13,15 @@
         
             public const string Register = Base + "/identity/register";
         }
+        
+   
+        public static class Message
+        {
+            public const string Create = Base + "/messages";
 
+            public const string Delete = Base + "/messages";
+        }
+        
         public static class Users
         {
             public const string Get = Base + "/users/{username}";
@@ -24,8 +32,16 @@
             {
                 public const string GetAll = Base + "/users/{username}/ads";
             }
-
+            public static class Messages
+            {
+                public const string GetAllSent = Base + "/users/{username}/messagesSent";
+        
+                public const string GetAllReceived = Base + "/users/{username}/messagesReceived";
+                
+                public const string NewMessagesCount = Base + "/users/{username}/newMessages";
+            }
         }
+        
         public static class Ads
         {
             public const string GetAll = Base + "/ads";

@@ -69,6 +69,8 @@ namespace API
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IMessageService, MessageService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -90,9 +92,13 @@ namespace API
             services.AddSingleton<IUriService>(provider =>
             {
                 var accessor = provider.GetRequiredService<IHttpContextAccessor>();
-                var request = accessor.HttpContext.Request;
-                var absoluteUri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent(), "/");
-                return new UriService(absoluteUri);
+                if (accessor.HttpContext != null)
+                {
+                    var request = accessor.HttpContext.Request;
+                    var absoluteUri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent(), "/");
+                    return new UriService(absoluteUri);
+                }
+                return null;
             });
 
             var tokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters

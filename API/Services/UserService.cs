@@ -19,13 +19,15 @@ namespace API.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
+        private readonly IPhotoService _photoService;
 
-        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, IPhotoService photoService)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _photoService = photoService;
         }
 
         public async Task<AppUser> GetUserByIdAsync(string id)
@@ -50,10 +52,10 @@ namespace API.Services
             
             if (model.ProfileImage != null)
             {
-                var filePath = UploadProfileImage(model);
-                user.ProfileImage = await filePath;
+                user.ProfileImage = await _photoService.UploadImage("AvatarUrl", "Avatars", model.ProfileImage);
             }
             else user.ProfileImage = user.ProfileImage;
+            
             if (model.Name != null)
             {
                 user.Name = model.Name;
@@ -65,6 +67,10 @@ namespace API.Services
             if (model.Email != null)
             {
                 user.Email = model.Email;
+            }
+            if (model.PhoneNumber != null)
+            {
+                user.PhoneNumber = model.PhoneNumber;
             }
 
             await _userManager.UpdateAsync(user);
@@ -82,19 +88,6 @@ namespace API.Services
                 Payload = user
             };
         }
-        
-        private async Task<string> UploadProfileImage(AppUserUpdateModel model)
-        {
-            string url = $"{_configuration.GetValue<string>("AvatarUrl")}";
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "Avatars");
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.ProfileImage.CopyToAsync(fileStream);
-            }
-            return url + uniqueFileName;
-        }
-        
+
     }
 }

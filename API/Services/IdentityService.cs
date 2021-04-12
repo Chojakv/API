@@ -7,11 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Data;
 using API.Domain;
-using API.Models.AppUser;
 using API.Options;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services
@@ -62,7 +59,22 @@ namespace API.Services
                 Email = email,
                 RegistrationDate = DateTime.UtcNow
             };
-        
+            
+            var receivedMailbox = new Mailbox
+            {
+                Id = Guid.NewGuid(),
+                Type = MailboxType.Received,
+                UserId = newUser.Id
+            };
+            var sentMailbox = new Mailbox
+            {
+                Id = Guid.NewGuid(),
+                Type = MailboxType.Sent,
+                UserId = newUser.Id
+            };
+            await _dataContext.Mailboxes.AddAsync(receivedMailbox);
+            await _dataContext.Mailboxes.AddAsync(sentMailbox);
+            
             var createdUser = await _userManager.CreateAsync(newUser, password);
             
             if (!createdUser.Succeeded)

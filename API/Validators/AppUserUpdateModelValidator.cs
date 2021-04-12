@@ -18,6 +18,11 @@ namespace API.Validators
 
             RuleFor(x => x.Email)
                 .EmailAddress();
+
+            RuleFor(x => x.PhoneNumber)
+                .Matches("^[0-9]*$")
+                .MinimumLength(9)
+                .MaximumLength(9);
         }
     }
 }

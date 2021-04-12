@@ -12,9 +12,11 @@ namespace API.Domain
         [MaxLength(30, ErrorMessage = "LastName is too long. Max 30 chars.")]
         public string Lastname { get; set; }
         public DateTime RegistrationDate { get; set; }
-        
         public string ProfileImage { get; set; }
 
-        public ICollection<Ad> Ads { get; set; } = new List<Ad>();
+        public virtual ICollection<Ad> Ads { get; set; } = new List<Ad>();
+        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+        public virtual ICollection<Mailbox> Mailboxes { get; set; } = new List<Mailbox>();
+
     }
 }
