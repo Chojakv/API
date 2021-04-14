@@ -30,7 +30,7 @@ namespace API.Controllers.V1.Category
         }
         
         [HttpPost(ApiRoutes.Categories.Create)]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
         {
             var create = await _categoryService.CreateCategoryAsync(model);
