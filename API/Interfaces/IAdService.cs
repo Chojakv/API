@@ -5,8 +5,7 @@ using API.Domain;
 using API.Filters;
 using API.Models.Ad;
 
-
-namespace API.Services
+namespace API.Interfaces
 {
     public interface IAdService
     {

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using API.Domain;
 
-namespace API.Services
+namespace API.Interfaces
 {
     public interface IIdentityService
     {

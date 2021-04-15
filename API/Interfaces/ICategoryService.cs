@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Domain;
 using API.Models.Category;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace API.Services
+namespace API.Interfaces
 {
     public interface ICategoryService
     { 

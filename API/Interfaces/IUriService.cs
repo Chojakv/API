@@ -1,6 +1,6 @@
 using System;
 
-namespace API.Services
+namespace API.Interfaces
 {
     public interface IUriService
     {

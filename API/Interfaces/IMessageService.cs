@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Domain;
 using API.Models.Messages;
 
-namespace API.Services
+namespace API.Interfaces
 {
     public interface IMessageService
     {

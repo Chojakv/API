@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using API.Domain;
 using API.Models.AppUser;
 
-namespace API.Services
+namespace API.Interfaces
 {
     public interface IUserService
     {
