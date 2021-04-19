@@ -2,11 +2,10 @@ using System;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using API.Contracts.Requests;
-using API.Contracts.V1;
-using API.Domain;
-using API.Models.AppUser;
-using API.Services;
+using Application.Interfaces;
+using Application.Models.AppUser;
+using Contracts.Contracts.V1;
+using Domain.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Identity

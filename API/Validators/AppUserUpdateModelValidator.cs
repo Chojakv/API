@@ -1,5 +1,5 @@
 using System.Data;
-using API.Models.AppUser;
+using Application.Models.AppUser;
 using FluentValidation;
 
 namespace API.Validators

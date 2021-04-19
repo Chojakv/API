@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using API.Contracts.V1;
 using API.Extensions;
-using API.Models.Messages;
-using API.Services;
+using Application.Interfaces;
+using Application.Models.Messages;
 using AutoMapper;
+using Contracts.Contracts.V1;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.V1.Messages

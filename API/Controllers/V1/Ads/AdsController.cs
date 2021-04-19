@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Contracts.Requests.Queries;
-using API.Contracts.V1;
 using API.Extensions;
-using API.Filters;
-using API.Models.Ad;
-using API.Services;
+using Application.Interfaces;
+using Application.Models.Ad;
+using Application.Models.Queries;
 using AutoMapper;
+using Contracts.Contracts.V1;
+using Domain.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -67,29 +67,27 @@ namespace API.Controllers.V1.Ads
             var paging = _mapper.Map<PaginationFilters>(pagingQuery);
             
             var ads = await _adService.GetAdsAsync(filters, paging, sort);
-            if (ads.Any())
-            {
-                return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
-            }
-            return NotFound("Ads does not exists.");
+            
+            return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
+           
         }
         
-        [HttpGet(ApiRoutes.Ads.GetByCategory)]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries, [FromQuery]PaginationQuery pagingQuery)
-        {
-            var filers = _mapper.Map<GetAllAdsFilters>(queries);
-            var paging = _mapper.Map<PaginationFilters>(pagingQuery);
-            
-            var ads = await _adService.GetAdsByCategory(categoryId, filers, paging);
-            
-            if (ads.Any())  
-            {
-                return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
-            }
-            
-            return NotFound("Ads with that category does not exists.");
-        }
+        // [HttpGet(ApiRoutes.Ads.GetByCategory)]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries, [FromQuery]PaginationQuery pagingQuery)
+        // {
+        //     var filers = _mapper.Map<GetAllAdsFilters>(queries);
+        //     var paging = _mapper.Map<PaginationFilters>(pagingQuery);
+        //     
+        //     var ads = await _adService.GetAdsByCategory(categoryId, filers, paging);
+        //     
+        //     if (ads.Any())  
+        //     {
+        //         return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
+        //     }
+        //     
+        //     return NotFound("Ads with that category does not exists.");
+        // }
 
         [HttpPatch(ApiRoutes.Ads.Update)]
         public async Task<IActionResult> Update([FromRoute]Guid adId,[FromForm] AdUpdateModel model)

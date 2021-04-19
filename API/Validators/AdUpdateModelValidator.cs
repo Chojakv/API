@@ -1,4 +1,4 @@
-using API.Models.Ad;
+using Application.Models.Ad;
 using FluentValidation;
 
 namespace API.Validators

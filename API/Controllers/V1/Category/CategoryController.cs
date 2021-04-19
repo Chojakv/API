@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using API.Contracts.V1;
-using API.Data;
-using API.Models.Category;
-using API.Services;
+using Application.Interfaces;
+using Application.Models.Category;
 using AutoMapper;
+using Contracts.Contracts.V1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
