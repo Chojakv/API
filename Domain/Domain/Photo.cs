@@ -10,7 +10,6 @@ namespace Domain.Domain
         [ForeignKey("Ad")] 
         public Guid AdId { get; set; }
         public Ad Ad { get; set; }
-        
         public string PhotoUrl { get; set; }
     }
 }

@@ -13,8 +13,6 @@ namespace Application.Models.Messages
         public string SenderId { get; set; }
         
         public DateTime SendDate { get; set; }
-        
-        //public bool IsViewed { get; set; }
     }
 
 }

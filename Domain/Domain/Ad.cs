@@ -25,9 +25,7 @@ namespace Domain.Domain
         
         [ForeignKey("User")] 
         public string UserId { get; set; }
-
         public AppUser User { get; set; }
-
         public virtual ICollection<Photo> AdPhotos { get; set; } = new List<Photo>();
     }
     

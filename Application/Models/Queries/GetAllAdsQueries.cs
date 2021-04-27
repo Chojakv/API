@@ -1,5 +1,6 @@
 namespace Application.Models.Queries
 {
+    
     public class GetAllAdsQueries
     {
         public Cond Condition { get; set; }

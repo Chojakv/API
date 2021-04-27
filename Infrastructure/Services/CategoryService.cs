@@ -19,7 +19,6 @@ namespace Infrastructure.Services
             _dataContext = dataContext;
             _mapper = mapper;
         }
-        
         public async Task<PayloadResult<Category>> CreateCategoryAsync(CategoryCreationModel categoryModel)
         {
             var category = _mapper.Map<CategoryCreationModel, Category>(categoryModel);
@@ -40,7 +39,6 @@ namespace Infrastructure.Services
                 Payload = category
             };
         }
-        
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
             return await _dataContext.Categories.ToListAsync();

@@ -37,6 +37,5 @@ namespace Application.Models.Ad
         public CategoryDetailsModel Category { get; set; }
         
         public ICollection<PhotoDetailsModel> AdPhotos { get; set; }
-
     }
 }

@@ -8,8 +8,6 @@ namespace Domain.Domain
     {
         [Key]
         public Guid Id { get; set; }
-
-        //public Guid ParentMessageId { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
         public bool IsViewed { get; set; }
@@ -24,8 +22,6 @@ namespace Domain.Domain
         [ForeignKey("Received")] 
         public Guid ReceivedMailboxId { get; set; }
         public MailboxType Received { get; set; }
-        
-    
     }
 
 }

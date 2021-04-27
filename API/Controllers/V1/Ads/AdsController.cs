@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Extensions;
 using Application.Interfaces;
@@ -35,6 +34,11 @@ namespace API.Controllers.V1.Ads
             _uriService = uriService;
         }
         
+        
+        /// <summary>
+        ///  Creates an ads in the database
+        /// </summary>
+
         [HttpPost(ApiRoutes.Ads.Create)]
         public async Task<IActionResult> Create([FromForm] AdCreationModel model)
         {
@@ -44,7 +48,11 @@ namespace API.Controllers.V1.Ads
 
             return Created(locationUri, _mapper.Map<AdDetailsModel>(create.Payload));
         }
-
+        
+        
+        /// <summary>
+        ///  Returns single ad from the database
+        /// </summary>
         [HttpGet(ApiRoutes.Ads.Get)]
         [AllowAnonymous]
         public async Task<IActionResult> Get([FromRoute] Guid adId)
@@ -57,7 +65,11 @@ namespace API.Controllers.V1.Ads
             }
             return Ok(_mapper.Map<AdDetailsModel>(ad));
         }
-
+        
+        
+        /// <summary>
+        ///  Returns all ads from the database
+        /// </summary>
         [HttpGet(ApiRoutes.Ads.GetAll)]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries, [FromQuery] PaginationQuery pagingQuery, [FromQuery] string sort)
@@ -72,23 +84,10 @@ namespace API.Controllers.V1.Ads
            
         }
         
-        // [HttpGet(ApiRoutes.Ads.GetByCategory)]
-        // [AllowAnonymous]
-        // public async Task<IActionResult> GetByCategory([FromRoute]Guid categoryId, [FromQuery] GetAllAdsQueries queries, [FromQuery]PaginationQuery pagingQuery)
-        // {
-        //     var filers = _mapper.Map<GetAllAdsFilters>(queries);
-        //     var paging = _mapper.Map<PaginationFilters>(pagingQuery);
-        //     
-        //     var ads = await _adService.GetAdsByCategory(categoryId, filers, paging);
-        //     
-        //     if (ads.Any())  
-        //     {
-        //         return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
-        //     }
-        //     
-        //     return NotFound("Ads with that category does not exists.");
-        // }
-
+        
+        /// <summary>
+        ///   Updates ad from database based on provided Id
+        /// </summary>
         [HttpPatch(ApiRoutes.Ads.Update)]
         public async Task<IActionResult> Update([FromRoute]Guid adId,[FromForm] AdUpdateModel model)
         {
@@ -107,6 +106,10 @@ namespace API.Controllers.V1.Ads
             return NotFound("Such ad does not exists.");
         }
         
+        
+        /// <summary>
+        ///  Deletes ad from database based on provided Id
+        /// </summary>
         [HttpDelete(ApiRoutes.Ads.Delete)]
         public async Task<IActionResult> Delete([FromRoute]Guid adId)
         {

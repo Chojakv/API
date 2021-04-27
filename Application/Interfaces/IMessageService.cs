@@ -13,7 +13,6 @@ namespace Application.Interfaces
         Task<IEnumerable<Message>> GetUserReceivedMessages(string username);
         Task<bool> SetMessageAsViewed(string username);
         Task<int> NewMessagesCount(string username);
-
     }
 
 }

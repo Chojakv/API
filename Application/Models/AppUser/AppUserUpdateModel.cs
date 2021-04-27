@@ -9,5 +9,6 @@ namespace Application.Models.AppUser
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public IFormFile ProfileImage { get; set; }
+        
     }
 }

@@ -29,7 +29,6 @@ namespace Infrastructure.Services
             _dataContext = dataContext;
             _roleManager = roleManager;
         }
-
         public async Task<RegisterResult> RegisterAsync(string username, string email, string password)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
@@ -95,7 +94,6 @@ namespace Infrastructure.Services
                 Success = true
             };
         }
-
         public async Task<LoginResult> LoginAsync(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -125,6 +123,11 @@ namespace Infrastructure.Services
                 Token = token,
                 Success = true
             };
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
         }
 
         private async Task<string> GenerateTokenForUserAsync(AppUser user)
@@ -173,6 +176,5 @@ namespace Infrastructure.Services
 
             return tokenHandler.WriteToken(token);
         }
-        
     }
 }

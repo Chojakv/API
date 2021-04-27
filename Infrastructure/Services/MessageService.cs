@@ -20,8 +20,7 @@ namespace Infrastructure.Services
             _dataContext = dataContext;
         }
 
-        public async Task<PayloadResult<Message>> SendMessageAsync(string senderId, string receiverUsername,
-            SendMessageModel model)
+        public async Task<PayloadResult<Message>> SendMessageAsync(string senderId, string receiverUsername, SendMessageModel model)
         {
             var receiverId = await GetIdFromUsernameAsync(receiverUsername);
 
@@ -62,7 +61,6 @@ namespace Infrastructure.Services
                 Payload = message
             };
         }
-
         public async Task<IEnumerable<Message>> GetUserSentMessages(string username)
         {
             var sender = await _dataContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
@@ -78,7 +76,6 @@ namespace Infrastructure.Services
             
             return await _dataContext.Messages.Where(x => x.ReceiverId == receiver.Id).ToListAsync();
         }
-        
         public async Task<bool> SetMessageAsViewed(string username)
         {
             var user = await GetIdFromUsernameAsync(username);
@@ -92,7 +89,6 @@ namespace Infrastructure.Services
 
             return await _dataContext.SaveChangesAsync() > 0;
         }
-
         public async Task<int> NewMessagesCount(string username)
         {
             int unreadMessages = 0;
@@ -105,7 +101,6 @@ namespace Infrastructure.Services
             } 
             return unreadMessages;
         }
-        
         public async Task<string> GetIdFromUsernameAsync(string username)
         {
             return (await _dataContext.Users.Where(x => x.UserName == username).FirstOrDefaultAsync())?.Id;
