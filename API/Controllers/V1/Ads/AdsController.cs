@@ -27,7 +27,6 @@ namespace API.Controllers.V1.Ads
         
         public AdsController(IAdService adService, IMapper mapper, IWebHostEnvironment webHostEnvironment, IUriService uriService)
         {
-            
             _adService = adService;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;

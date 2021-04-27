@@ -15,19 +15,17 @@ namespace Application.MappingProfiles
     {
         public MappingProfile()
         {
-            CreateMap<CategoryCreationModel, Category>().ReverseMap();
+            CreateMap<CategoryCreationModel, Category>();
             CreateMap<CategoryDetailsModel, Category>().ReverseMap();
-            CreateMap<CategoryCreationModel, CategoryDetailsModel>().ReverseMap();
-
-            CreateMap<AdCreationModel, AdDetailsModel>().ReverseMap();
+            
             CreateMap<AdCreationModel, Ad>();
-                
-            CreateMap<AdDetailsModel, Ad> ();
+            CreateMap<AdCreationModel, AdDetailsModel>();
+            CreateMap<AdDetailsModel, Ad>();
             CreateMap<Ad, AdDetailsModel>()
                 .ForMember(dest => dest.CreatedBy, act => act.MapFrom(src => src.User.UserName));
             
-            CreateMap<AdUpdateModel, Ad>().ReverseMap();
-            CreateMap<AdUpdateModel, AdDetailsModel>().ReverseMap();
+            CreateMap<AdUpdateModel, Ad>();
+            CreateMap<AdUpdateModel, AdDetailsModel>();
             CreateMap<AdUpdateModel, AppUser>().ReverseMap();
 
             CreateMap<AppUser, AppUserDetailsModel>();
@@ -44,9 +42,6 @@ namespace Application.MappingProfiles
             CreateMap<SendMessageModel, Message>().ReverseMap();
             CreateMap<Message, DetailsSentMessageModel>().ReverseMap();
             CreateMap<Message, DetailsReceivedMessageModel>().ReverseMap();
-
-
-
         }
     }
 }
