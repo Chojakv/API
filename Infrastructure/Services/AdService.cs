@@ -96,16 +96,6 @@ namespace Infrastructure.Services
         {
             return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).Include(x=>x.AdPhotos).FirstOrDefaultAsync(x =>x.Id == adId);
         }
-        
-        // public async Task<IEnumerable<Ad>> GetAdsByCategory(Guid categoryId, GetAllAdsFilters filters, PaginationFilters paging)
-        // {
-        //     var collection = _dataContext.Ads as IQueryable<Ad>;
-        //
-        //     collection = GetFilers(filters, paging, collection);
-        //     
-        //     return await collection.Where(x=>x.CategoryId == categoryId).ToListAsync();
-        // }
-
         public async Task<PayloadResult<Ad>> UpdateAdAsync(Guid adId, AdUpdateModel adModel)
         {
             var ad = await _dataContext.Ads.FirstOrDefaultAsync(x => x.Id == adId);

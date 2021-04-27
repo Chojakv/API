@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models.AppUser;
@@ -20,7 +17,9 @@ namespace API.Controllers.V1.Identity
             _identityService = identityService;
         }
 
-
+        /// <summary>
+        ///  Creates user account, returns token
+        /// </summary>
         [HttpPost(ApiRoutes.Identity.Register)]
         public async Task<IActionResult> Register([FromBody]AppUserRegistrationModel registrationModel)
         {
@@ -40,7 +39,9 @@ namespace API.Controllers.V1.Identity
                 Token = authenticationResponse.Token,
             });
         }
-
+        /// <summary>
+        ///  Login to existing user acc, returns token
+        /// </summary>
         [HttpPost(ApiRoutes.Identity.Login)]
         public async Task<IActionResult> Login([FromBody] AppUserLoginModel loginModel)
         {
@@ -59,6 +60,12 @@ namespace API.Controllers.V1.Identity
                 Token = authenticationResponse.Token,
                 Success = true
             });
+        }
+
+        [HttpPost(ApiRoutes.Identity.Logout)]
+        public async Task Logout()
+        {
+            await _identityService.LogoutAsync();
         }
     }
 }

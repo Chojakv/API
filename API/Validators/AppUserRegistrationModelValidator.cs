@@ -1,4 +1,3 @@
-using System.Data;
 using Application.Models.AppUser;
 using FluentValidation;
 

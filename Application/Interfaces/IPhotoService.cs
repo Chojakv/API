@@ -6,5 +6,6 @@ namespace Application.Interfaces
     public interface IPhotoService
     {
         Task<string> UploadImage(string key, string folder, IFormFile file);
+        
     }
 }

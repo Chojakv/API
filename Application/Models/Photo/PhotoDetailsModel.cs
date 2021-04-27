@@ -7,5 +7,6 @@ namespace Application.Models.Photo
         public Guid Id { get; set; }
         public Guid AdId { get; set; }
         public string PhotoUrl { get; set; }
+        
     }
 }

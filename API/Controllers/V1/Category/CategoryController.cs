@@ -27,6 +27,9 @@ namespace API.Controllers.V1.Category
             _uriService = uriService;
         }
         
+        /// <summary>
+        ///  Creates category in the database
+        /// </summary>
         [HttpPost(ApiRoutes.Categories.Create)]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromForm]CategoryCreationModel model)
@@ -38,6 +41,9 @@ namespace API.Controllers.V1.Category
             return Created(locationUri, _mapper.Map<CategoryDetailsModel>(create.Payload));
         }
 
+        /// <summary>
+        ///  Returns all categories from the database
+        /// </summary>
         [HttpGet(ApiRoutes.Categories.GetAll)]
         [AllowAnonymous]
         public async Task<IActionResult> GetAll()
@@ -48,6 +54,9 @@ namespace API.Controllers.V1.Category
             
         }
 
+        /// <summary>
+        ///  Returns single category from the database
+        /// </summary>
         [HttpGet(ApiRoutes.Categories.Get)]
         [AllowAnonymous]
         public async Task<IActionResult> Get([FromRoute]Guid categoryId)
@@ -60,6 +69,10 @@ namespace API.Controllers.V1.Category
             return Ok(_mapper.Map<CategoryDetailsModel>(category));
         }
         
+        
+        /// <summary>
+        ///  Deletes category from the database
+        /// </summary>
         [HttpDelete(ApiRoutes.Categories.Delete)]
         public async Task<IActionResult> Delete([FromRoute]Guid categoryId)
         {

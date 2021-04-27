@@ -9,15 +9,11 @@ namespace Domain.Domain
     {
         [Key]
         public Guid Id { get; set; }
-
         public MailboxType Type{ get; set; }
-    
         [ForeignKey("User")] 
         public string UserId { get; set; }
         public AppUser User { get; set; }
-
         public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
-
     }
 
     public enum MailboxType

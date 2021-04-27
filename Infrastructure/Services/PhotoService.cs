@@ -10,7 +10,6 @@ namespace Infrastructure.Services
 {
     public class PhotoService: IPhotoService
     {
-
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
@@ -19,7 +18,6 @@ namespace Infrastructure.Services
             _configuration = configuration;
             _webHostEnvironment = webHostEnvironment;
         }
-
         public async Task<string> UploadImage(string key, string folder, IFormFile file)
         {
             var url = $"{_configuration.GetValue<string>($"{key}")}";

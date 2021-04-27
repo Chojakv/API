@@ -17,7 +17,6 @@ namespace Application.Models.Ad
         public Guid CategoryId { get; set; }
         
         public DateTime CreationDate = DateTime.UtcNow;
-        
         public ICollection<IFormFile> AdPhotos { get; set; }
     }
 }

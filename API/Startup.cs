@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
@@ -145,6 +146,10 @@ namespace API
                         Type = ReferenceType.SecurityScheme
                     }}, new List<string>()}
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                x.IncludeXmlComments(xmlPath);
             });
             
             services.AddSwaggerGenNewtonsoftSupport();

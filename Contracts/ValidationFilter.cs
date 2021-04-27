@@ -34,7 +34,6 @@ namespace Contracts
                 context.Result = new BadRequestObjectResult(errorResponse);
                 return;
             }
-
             await next();
         }
     }

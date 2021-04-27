@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.Extensions;
 using Application.Interfaces;
 using Application.Models.Ad;
 using Application.Models.AppUser;
@@ -28,6 +27,9 @@ namespace API.Controllers.V1.Users
             _messageService = messageService;
         }
 
+        /// <summary>
+        ///  Returns specified user from the database
+        /// </summary>
         [HttpGet(ApiRoutes.Users.Get)]
         public async Task<IActionResult> GetUserByName([FromRoute]string username)
         {
@@ -40,6 +42,9 @@ namespace API.Controllers.V1.Users
             return Ok(_mapper.Map<AppUserDetailsModel>(user));
         }
         
+        /// <summary>
+        ///  Returns all ads created by specified user
+        /// </summary>
         [HttpGet(ApiRoutes.Users.Ads.GetAll)]
         public async Task<IActionResult> GetUserAds(string username)
         {
@@ -53,7 +58,9 @@ namespace API.Controllers.V1.Users
             return NotFound("This user does not have any ads");
         }
 
-
+        /// <summary>
+        ///  Updates user acc
+        /// </summary>
         [HttpPatch(ApiRoutes.Users.Update)]
         public async Task<IActionResult> Update(string username, [FromForm] AppUserUpdateModel model)
         {
@@ -75,7 +82,9 @@ namespace API.Controllers.V1.Users
             return Ok();
         }
         
-        
+        /// <summary>
+        ///  Returns all sent messages for specified user
+        /// </summary>
         [HttpGet(ApiRoutes.Users.Messages.GetAllSent)]
         public async Task<IActionResult> GetUserSentMessages(string username)
         {
@@ -96,6 +105,9 @@ namespace API.Controllers.V1.Users
             return NotFound("This user does not have any sent messages");
         }
 
+        /// <summary>
+        ///  Returns all received messages for specified user
+        /// </summary>
         [HttpGet(ApiRoutes.Users.Messages.GetAllReceived)]
         public async Task<IActionResult> GetUserReceivedMessages(string username)
         {
@@ -116,6 +128,9 @@ namespace API.Controllers.V1.Users
             return NotFound("This user does not have any received messages");
         }
 
+        /// <summary>
+        ///  Returns number of new messages for specified user
+        /// </summary>
         [HttpGet(ApiRoutes.Users.Messages.NewMessagesCount)]
         public async Task<IActionResult> NewMessagesCount(string username)
         {

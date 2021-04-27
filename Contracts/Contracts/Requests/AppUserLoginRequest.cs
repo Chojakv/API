@@ -4,6 +4,7 @@ namespace Contracts.Contracts.Requests
 {
     public class AppUserLoginRequest
     {
+        
         [Required]
         [EmailAddress]
         public string Email { get; set; }

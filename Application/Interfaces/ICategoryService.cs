@@ -12,7 +12,5 @@ namespace Application.Interfaces
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(Guid categoryId);
         Task<BaseRequestResult> DeleteCategoryAsync(Guid categoryId);
-        
-
     }
 }

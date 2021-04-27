@@ -4,7 +4,8 @@ using FluentValidation;
 namespace API.Validators
 {
     public class AdCreationModelValidator : AbstractValidator<AdCreationModel>
-    {
+    { 
+        
         public AdCreationModelValidator()
         {
             RuleFor(x => x.Title)

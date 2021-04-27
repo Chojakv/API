@@ -19,6 +19,5 @@ namespace Application.Models.AppUser
         public DateTime RegistrationDate { get; set; }
         
         public string ProfileImage { get; set; }
-        
     }
 }

@@ -30,7 +30,6 @@ namespace Infrastructure.Services
         {
             return await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
-        
         public async Task<AppUser> GetUserByNameAsync(string username)
         {
             return await _dataContext.Users.FirstOrDefaultAsync(x => x.UserName == username);

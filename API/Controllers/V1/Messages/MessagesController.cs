@@ -22,6 +22,9 @@ namespace API.Controllers.V1.Messages
             _uriService = uriService;
         }
     
+        /// <summary>
+        ///  Creates new message
+        /// </summary>
         [HttpPost(ApiRoutes.Message.Create)]
         public async Task<IActionResult> Create([FromForm] string username, [FromForm]SendMessageModel model)
         {
