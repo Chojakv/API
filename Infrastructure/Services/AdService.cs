@@ -81,15 +81,15 @@ namespace Infrastructure.Services
             };
         }
         
-        public async Task<IEnumerable<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters paging, string sort)
+        public async Task<PagedList<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters pagination, string sort)
         {
             var collection = _dataContext.Ads as IQueryable<Ad>;
 
-            collection = GetFilers(filters, paging, collection);
+            collection = GetFilers(filters, collection);
 
             collection = SortAds(collection, sort);
 
-            return await collection.ToListAsync();
+            return PagedList<Ad>.ToPagedList(collection, pagination.PageNumber, pagination.PageSize);
         }
         
         public async Task<Ad> GetAdByIdAsync(Guid adId)
@@ -207,7 +207,7 @@ namespace Infrastructure.Services
             };
         }
         
-        private  static IQueryable<Ad> GetFilers(GetAllAdsFilters filters, PaginationFilters paging, IQueryable<Ad> collection)
+        private  static IQueryable<Ad> GetFilers(GetAllAdsFilters filters, IQueryable<Ad> collection)
         {
             collection = filters.Condition switch
             {
@@ -254,13 +254,9 @@ namespace Infrastructure.Services
                 collection = collection.Where(x => x.Title.Contains(filters.Title));
             }
             
-            return collection.Include(x=>x.User).Include(x=>x.Category).Skip(paging.PageSize * (paging.PageNumber - 1)).Take(paging.PageSize);
+            return collection.Include(x=>x.User).Include(x=>x.Category);
         }
-
-        public enum Cond
-        {
-            All, New, Used
-        }
+        
         
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using API.Extensions;
 using Application.Interfaces;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace API.Controllers.V1.Ads
 {
@@ -66,7 +68,6 @@ namespace API.Controllers.V1.Ads
             return Ok(_mapper.Map<AdDetailsModel>(ad));
         }
         
-        
         /// <summary>
         ///  Returns all ads from the database
         /// </summary>
@@ -80,10 +81,10 @@ namespace API.Controllers.V1.Ads
             
             var ads = await _adService.GetAdsAsync(filters, paging, sort);
             
+            Response.Headers.Add("Pagination", JsonConvert.SerializeObject(ads.Filters));
+            
             return Ok((_mapper.Map<IEnumerable<AdDetailsModel>>(ads)));
-           
         }
-        
         
         /// <summary>
         ///   Updates ad from database based on provided Id
