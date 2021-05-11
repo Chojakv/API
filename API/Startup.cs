@@ -56,6 +56,7 @@ namespace API
                         builder.WithOrigins("https://localhost:8090")
                             .AllowAnyMethod()
                             .AllowAnyHeader()
+                            .WithExposedHeaders("Pagination")
                     );
             });
             
