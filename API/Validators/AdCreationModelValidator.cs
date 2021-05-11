@@ -10,25 +10,26 @@ namespace API.Validators
         {
             RuleFor(x => x.Title)
                 .NotEmpty()
-                .MaximumLength(60)
-                .MinimumLength(10);
+                .MaximumLength(15)
+                .MinimumLength(5);
 
             RuleFor(x => x.Author)
                 .NotEmpty()
-                .MaximumLength(40)
-                .MinimumLength(3);
+                .MaximumLength(20)
+                .MinimumLength(5);
 
             RuleFor(x => x.BookName)
                 .NotEmpty()
-                .MaximumLength(60)
-                .MinimumLength(3);
+                .MaximumLength(25)
+                .MinimumLength(5);
 
             RuleFor(x => x.Content)
                 .NotEmpty()
-                .MaximumLength(350)
-                .MinimumLength(10);
+                .MaximumLength(200)
+                .MinimumLength(5);
 
             RuleFor(x => x.Price)
+                .NotEmpty()
                 .GreaterThanOrEqualTo(0);
         }
     }

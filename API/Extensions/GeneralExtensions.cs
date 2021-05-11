@@ -7,12 +7,12 @@ namespace API.Extensions
     {
         public static string GetUserId(this HttpContext httpContext)
         {
-            return httpContext.User != null ? httpContext.User.Claims.Single(x => x.Type == "Id").Value : string.Empty;
+            return httpContext.User.Claims.SingleOrDefault(x => x.Type == "Id")?.Value;
         }
         
         public static string GetUsername(this HttpContext httpContext)
         {
-            return httpContext.User != null ? httpContext.User.Claims.First(x => x.Type == "Username").Value : string.Empty;
+            return httpContext.User.Claims.SingleOrDefault(x => x.Type == "Username")?.Value;
         }
         
 

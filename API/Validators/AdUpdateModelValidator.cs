@@ -8,18 +8,17 @@ namespace API.Validators
         public AdUpdateModelValidator()
         {
             RuleFor(x => x.Title)
-                .MaximumLength(60);
+                .MaximumLength(15);
 
             RuleFor(x => x.Author)
-                .MaximumLength(40);
+                .MaximumLength(20);
 
             RuleFor(x => x.BookName)
-                .MaximumLength(60);
+                .MaximumLength(25);
 
             RuleFor(x => x.Content)
-                .NotEmpty()
-                .MaximumLength(350)
-                .MinimumLength(10);
+                .MaximumLength(200)
+                .MinimumLength(5);
 
             RuleFor(x => x.Price)
                 .NotEmpty()

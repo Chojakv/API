@@ -8,10 +8,9 @@ namespace Application.Models.Ad
         public string Title { get; set; }
         public string BookName { get; set; }
         public string Author { get; set; }
-        [Required]
         public string Content { get; set; }
         [Required]
-        public float Price { get; set; }
+        public decimal Price { get; set; }
         public IFormFile PictureAttached { get; set; }
     }
 }

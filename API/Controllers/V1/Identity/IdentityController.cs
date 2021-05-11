@@ -21,7 +21,7 @@ namespace API.Controllers.V1.Identity
         ///  Creates user account, returns token
         /// </summary>
         [HttpPost(ApiRoutes.Identity.Register)]
-        public async Task<IActionResult> Register([FromBody]AppUserRegistrationModel registrationModel)
+        public async Task<IActionResult> Register([FromForm]AppUserRegistrationModel registrationModel)
         {
             var authenticationResponse = await _identityService.RegisterAsync(registrationModel.UserName, registrationModel.Email, registrationModel.Password);
 
@@ -43,7 +43,7 @@ namespace API.Controllers.V1.Identity
         ///  Login to existing user acc, returns token
         /// </summary>
         [HttpPost(ApiRoutes.Identity.Login)]
-        public async Task<IActionResult> Login([FromBody] AppUserLoginModel loginModel)
+        public async Task<IActionResult> Login([FromForm] AppUserLoginModel loginModel)
         {
             var authenticationResponse = await _identityService.LoginAsync(loginModel.Email, loginModel.Password);
 

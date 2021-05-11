@@ -7,6 +7,10 @@ namespace Infrastructure
 {
     public class DataContext : IdentityDbContext<AppUser>
     {
+        public DataContext()
+        {
+            
+        }
         public DataContext(DbContextOptions<DataContext> options) : base(options) {}
         public DbSet<Message> Messages { get; set; }
         public DbSet<Mailbox> Mailboxes { get; set; }

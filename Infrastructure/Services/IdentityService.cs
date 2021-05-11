@@ -97,7 +97,7 @@ namespace Infrastructure.Services
         public async Task<LoginResult> LoginAsync(string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
-           
+            
             if (user == null)
             {
                 return new LoginResult
@@ -141,6 +141,7 @@ namespace Infrastructure.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("Username",user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("Id", user.Id)
             };
 

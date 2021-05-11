@@ -4,6 +4,7 @@ namespace Application.Models.AppUser
 {
     public class AppUserRegistrationModel
     {
+        [Required]
         public string UserName { get; set; }
         [Required]
         [EmailAddress]

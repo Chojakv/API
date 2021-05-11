@@ -48,15 +48,14 @@ namespace API
                     q=>q.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<DataContext>();
             
-            
             services.AddControllers();
             
             services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder =>
-                    builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
+                {
+                    options.AddPolicy("CorsPolicy", builder =>
+                        builder.WithOrigins("https://localhost:8090")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
                     );
             });
             
@@ -166,6 +165,7 @@ namespace API
             {
                 app.UseHsts();
             }
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles(new StaticFileOptions
             {
@@ -177,23 +177,27 @@ namespace API
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/Avatars")),
                 RequestPath = "/wwwroot/Avatars"
             });
-            app.UseRouting();
-            
+      
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
-
+            app.UseRouting();
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
             app.UseAuthentication();
-            app.UseCors("CorsPolicy");
+            
             
             app.UseSwagger(option => { option.RouteTemplate = swaggerOptions.JsonRoute; });
             app.UseSwaggerUI(option => { option.SwaggerEndpoint(swaggerOptions.UiEndpoint, swaggerOptions.Description); });
 
+            app.UseWebAssemblyDebugging();
+            app.UseRouting();
+            app.UseCors("CorsPolicy");
+            app.UseAuthorization();
+            app.UseAuthentication();
             
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapRazorPages();
             });
 
             Task.Run(() => this.CreateRole(roleManager)).Wait();

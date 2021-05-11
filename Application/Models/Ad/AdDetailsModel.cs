@@ -21,7 +21,7 @@ namespace Application.Models.Ad
 
         public string Content { get; set; }
         
-        public float Price { get; set; }
+        public decimal Price { get; set; }
 
         public string PictureAttached { get; set; }
 

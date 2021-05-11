@@ -16,10 +16,10 @@ namespace Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "6.0.0-preview.1.21102.2")
+                .HasAnnotation("ProductVersion", "6.0.0-preview.3.21201.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("API.Domain.Ad", b =>
+            modelBuilder.Entity("Domain.Domain.Ad", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,8 +49,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("PictureAttached")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -67,7 +67,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Ads");
                 });
 
-            modelBuilder.Entity("API.Domain.AppUser", b =>
+            modelBuilder.Entity("Domain.Domain.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -146,7 +146,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("API.Domain.Category", b =>
+            modelBuilder.Entity("Domain.Domain.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +160,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("API.Domain.Mailbox", b =>
+            modelBuilder.Entity("Domain.Domain.Mailbox", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,7 +179,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Mailboxes");
                 });
 
-            modelBuilder.Entity("API.Domain.Message", b =>
+            modelBuilder.Entity("Domain.Domain.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,7 +230,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("API.Domain.Photo", b =>
+            modelBuilder.Entity("Domain.Domain.Photo", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -380,15 +380,15 @@ namespace Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("API.Domain.Ad", b =>
+            modelBuilder.Entity("Domain.Domain.Ad", b =>
                 {
-                    b.HasOne("API.Domain.Category", "Category")
+                    b.HasOne("Domain.Domain.Category", "Category")
                         .WithMany("Ads")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Domain.AppUser", "User")
+                    b.HasOne("Domain.Domain.AppUser", "User")
                         .WithMany("Ads")
                         .HasForeignKey("UserId");
 
@@ -397,29 +397,29 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Domain.Mailbox", b =>
+            modelBuilder.Entity("Domain.Domain.Mailbox", b =>
                 {
-                    b.HasOne("API.Domain.AppUser", "User")
+                    b.HasOne("Domain.Domain.AppUser", "User")
                         .WithMany("Mailboxes")
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("API.Domain.Message", b =>
+            modelBuilder.Entity("Domain.Domain.Message", b =>
                 {
-                    b.HasOne("API.Domain.AppUser", null)
+                    b.HasOne("Domain.Domain.AppUser", null)
                         .WithMany("Messages")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("API.Domain.Mailbox", null)
+                    b.HasOne("Domain.Domain.Mailbox", null)
                         .WithMany("Messages")
                         .HasForeignKey("MailboxId");
                 });
 
-            modelBuilder.Entity("API.Domain.Photo", b =>
+            modelBuilder.Entity("Domain.Domain.Photo", b =>
                 {
-                    b.HasOne("API.Domain.Ad", "Ad")
+                    b.HasOne("Domain.Domain.Ad", "Ad")
                         .WithMany("AdPhotos")
                         .HasForeignKey("AdId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -439,7 +439,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("API.Domain.AppUser", null)
+                    b.HasOne("Domain.Domain.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -448,7 +448,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("API.Domain.AppUser", null)
+                    b.HasOne("Domain.Domain.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -463,7 +463,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Domain.AppUser", null)
+                    b.HasOne("Domain.Domain.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,19 +472,19 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("API.Domain.AppUser", null)
+                    b.HasOne("Domain.Domain.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Domain.Ad", b =>
+            modelBuilder.Entity("Domain.Domain.Ad", b =>
                 {
                     b.Navigation("AdPhotos");
                 });
 
-            modelBuilder.Entity("API.Domain.AppUser", b =>
+            modelBuilder.Entity("Domain.Domain.AppUser", b =>
                 {
                     b.Navigation("Ads");
 
@@ -493,12 +493,12 @@ namespace Infrastructure.Migrations
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("API.Domain.Category", b =>
+            modelBuilder.Entity("Domain.Domain.Category", b =>
                 {
                     b.Navigation("Ads");
                 });
 
-            modelBuilder.Entity("API.Domain.Mailbox", b =>
+            modelBuilder.Entity("Domain.Domain.Mailbox", b =>
                 {
                     b.Navigation("Messages");
                 });
