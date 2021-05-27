@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using API.Extensions;
 using Application.Interfaces;
@@ -14,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace API.Controllers.V1.Ads
@@ -27,13 +26,15 @@ namespace API.Controllers.V1.Ads
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IUriService _uriService;
-        
-        public AdsController(IAdService adService, IMapper mapper, IWebHostEnvironment webHostEnvironment, IUriService uriService)
+        private readonly IConfiguration _configuration;
+
+        public AdsController(IAdService adService, IMapper mapper, IWebHostEnvironment webHostEnvironment, IUriService uriService, IConfiguration configuration)
         {
             _adService = adService;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _uriService = uriService;
+            _configuration = configuration;
         }
         
         
@@ -68,6 +69,7 @@ namespace API.Controllers.V1.Ads
             return Ok(_mapper.Map<AdDetailsModel>(ad));
         }
         
+        
         /// <summary>
         ///  Returns all ads from the database
         /// </summary>
@@ -76,7 +78,7 @@ namespace API.Controllers.V1.Ads
         public async Task<IActionResult> GetAll([FromQuery] GetAllAdsQueries queries, [FromQuery] PaginationQuery pagingQuery, [FromQuery] string sort)
         {
             var filters = _mapper.Map<GetAllAdsFilters>(queries);
-
+        
             var paging = _mapper.Map<PaginationFilters>(pagingQuery);
             
             var ads = await _adService.GetAdsAsync(filters, paging, sort);
@@ -111,6 +113,7 @@ namespace API.Controllers.V1.Ads
         /// <summary>
         ///  Deletes ad from database based on provided Id
         /// </summary>
+        
         [HttpDelete(ApiRoutes.Ads.Delete)]
         public async Task<IActionResult> Delete([FromRoute]Guid adId)
         {
@@ -129,6 +132,31 @@ namespace API.Controllers.V1.Ads
             }
             
             return NotFound("Such ad does not exists.");
+        }
+
+        /// <summary>
+        ///  Upload images
+        /// </summary>
+        [HttpPost(ApiRoutes.Ads.UploadPhoto)]
+        public async Task<IActionResult> UploadPhotos(Guid adId, [FromForm] AdUploadPhotosModel images)
+        {
+            var ad = await _adService.GetAdByIdAsync(adId);
+            
+            if (ad == null)
+            { 
+                return NotFound("Such ad does not exists.");
+            }
+            
+            var userOwnsPost = await _adService.UserOwnsPostAsync(adId, HttpContext.GetUserId());
+            
+            if (!userOwnsPost.Success)
+            {
+                return BadRequest(new { error = "You do not own this ad" });
+            }
+
+            await _adService.UploadAdImages(adId, images);
+
+            return Ok();
         }
     }
 }

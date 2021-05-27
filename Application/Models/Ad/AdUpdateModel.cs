@@ -11,6 +11,5 @@ namespace Application.Models.Ad
         public string Content { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public IFormFile PictureAttached { get; set; }
     }
 }

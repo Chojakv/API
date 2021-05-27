@@ -6,6 +6,6 @@ namespace Application.Interfaces
     {
         Uri GetAdUri(string adId);
         Uri GetCategoryUri(string categoryId);
-        Uri GetMessageUri(string messageId);
+
     }
 }

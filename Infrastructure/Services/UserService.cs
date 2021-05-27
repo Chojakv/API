@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models.AppUser;
@@ -5,6 +7,7 @@ using Domain.Domain;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Infrastructure.Services
@@ -15,21 +18,15 @@ namespace Infrastructure.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
-        private readonly IPhotoService _photoService;
 
-        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, IPhotoService photoService)
+        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
-            _photoService = photoService;
         }
-
-        public async Task<AppUser> GetUserByIdAsync(string id)
-        {
-            return await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == id);
-        }
+        
         public async Task<AppUser> GetUserByNameAsync(string username)
         {
             return await _dataContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
@@ -44,13 +41,7 @@ namespace Infrastructure.Services
                 {
                     Errors = new[] {$"User with username '{user.UserName}' does not exists."}
                 };
-            
-            if (model.ProfileImage != null)
-            {
-                user.ProfileImage = await _photoService.UploadImage("AvatarUrl", "Avatars", model.ProfileImage);
-            }
-            else user.ProfileImage = user.ProfileImage;
-            
+
             if (model.Name != null)
             {
                 user.Name = model.Name;
@@ -84,5 +75,30 @@ namespace Infrastructure.Services
             };
         }
 
+        public async Task<string> UploadAvatar(string username, AppUserAvatarModel image)
+        {
+            var url = _configuration.GetValue<string>("AvatarUrl");
+            
+            var fileName = image.ProfileImage.FileName;
+            var extension = Path.GetExtension(fileName);
+
+            var newFileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath,"wwwroot", "Avatars", newFileName);
+
+            await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                await image.ProfileImage.CopyToAsync(fileStream);
+            }
+
+            var avatarUrl = $"{url}/{newFileName}";
+            
+            var user = await GetUserByNameAsync(username);
+   
+            user.ProfileImage = avatarUrl;
+            
+            await _dataContext.SaveChangesAsync();
+
+            return avatarUrl;
+        }
     }
 }

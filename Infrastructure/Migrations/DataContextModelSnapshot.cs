@@ -46,9 +46,6 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("LastEditedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PictureAttached")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -65,6 +62,25 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Ads");
+                });
+
+            modelBuilder.Entity("Domain.Domain.AdImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AdId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdId");
+
+                    b.ToTable("AdImages");
                 });
 
             modelBuilder.Entity("Domain.Domain.AppUser", b =>
@@ -206,10 +222,16 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ReceiverId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReceiverUsername")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("SendDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("SenderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderUsername")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Sent")
@@ -228,25 +250,6 @@ namespace Infrastructure.Migrations
                     b.HasIndex("MailboxId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("Domain.Domain.Photo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AdId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdId");
-
-                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -397,6 +400,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Domain.AdImage", b =>
+                {
+                    b.HasOne("Domain.Domain.Ad", "Ad")
+                        .WithMany("Images")
+                        .HasForeignKey("AdId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ad");
+                });
+
             modelBuilder.Entity("Domain.Domain.Mailbox", b =>
                 {
                     b.HasOne("Domain.Domain.AppUser", "User")
@@ -415,17 +429,6 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Domain.Mailbox", null)
                         .WithMany("Messages")
                         .HasForeignKey("MailboxId");
-                });
-
-            modelBuilder.Entity("Domain.Domain.Photo", b =>
-                {
-                    b.HasOne("Domain.Domain.Ad", "Ad")
-                        .WithMany("AdPhotos")
-                        .HasForeignKey("AdId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Ad");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -481,7 +484,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Domain.Ad", b =>
                 {
-                    b.Navigation("AdPhotos");
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("Domain.Domain.AppUser", b =>

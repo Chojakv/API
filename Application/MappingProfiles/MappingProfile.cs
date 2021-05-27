@@ -2,7 +2,6 @@
 using Application.Models.AppUser;
 using Application.Models.Category;
 using Application.Models.Messages;
-using Application.Models.Photo;
 using Application.Models.Queries;
 using AutoMapper;
 using Domain.Domain;
@@ -21,6 +20,7 @@ namespace Application.MappingProfiles
             CreateMap<AdCreationModel, Ad>();
             CreateMap<AdCreationModel, AdDetailsModel>();
             CreateMap<AdDetailsModel, Ad>();
+            CreateMap<AdUploadPhotosModel, Ad>().ReverseMap();
             CreateMap<Ad, AdDetailsModel>()
                 .ForMember(dest => dest.CreatedBy, act => act.MapFrom(src => src.User.UserName));
             
@@ -31,12 +31,14 @@ namespace Application.MappingProfiles
             CreateMap<AppUser, AppUserDetailsModel>();
             CreateMap<AppUser, AppUserUpdateModel>().ReverseMap();
             
+            CreateMap<AppUser, AppUserAvatarModel>().ReverseMap();
+            
             CreateMap<GetAllAdsQueries, GetAllAdsFilters>();
             CreateMap<PaginationQuery, PaginationFilters>();
-
-            CreateMap<IFormFile, PhotoDetailsModel>().ReverseMap();
-            CreateMap<IFormFile, Photo>().ReverseMap();
-            CreateMap<Photo, PhotoDetailsModel>().ReverseMap();
+            
+            CreateMap<IFormFile, AdPhotoDetailsModel>().ReverseMap();
+            CreateMap<IFormFile, AdImage>().ReverseMap();
+            CreateMap<AdImage, AdPhotoDetailsModel>().ReverseMap();
             
             CreateMap<SendMessageModel, DetailsSentMessageModel>().ReverseMap();
             CreateMap<SendMessageModel, Message>().ReverseMap();

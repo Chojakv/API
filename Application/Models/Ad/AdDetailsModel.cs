@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Application.Models.AppUser;
 using Application.Models.Category;
-using Application.Models.Photo;
 using Domain.Domain;
 
 namespace Application.Models.Ad
@@ -22,8 +21,8 @@ namespace Application.Models.Ad
         public string Content { get; set; }
         
         public decimal Price { get; set; }
-
-        public string PictureAttached { get; set; }
+        
+        public ICollection<AdPhotoDetailsModel> Images { get; set; }
 
         public DateTime CreationDate { get; set; }
 
@@ -36,6 +35,6 @@ namespace Application.Models.Ad
 
         public CategoryDetailsModel Category { get; set; }
         
-        public ICollection<PhotoDetailsModel> AdPhotos { get; set; }
+        
     }
 }

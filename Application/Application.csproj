@@ -17,4 +17,9 @@
       </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Models\Category" />
+      <Folder Include="Models\Messages" />
+    </ItemGroup>
+
 </Project>

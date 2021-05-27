@@ -20,15 +20,24 @@ namespace Infrastructure.Services
             _dataContext = dataContext;
         }
 
-        public async Task<PayloadResult<Message>> SendMessageAsync(string senderId, string receiverUsername, SendMessageModel model)
+        public async Task<PayloadResult<Message>> SendMessageAsync(string senderId, SendMessageModel model)
         {
-            var receiverId = await GetIdFromUsernameAsync(receiverUsername);
+            var receiverId = await GetIdFromUsernameAsync(model.Username);
 
+            var senderUsername = await _dataContext.Users.FirstOrDefaultAsync(x => x.Id == senderId);
+            
             if (receiverId == null)
                 return new PayloadResult<Message>
                 {
-                    Errors = new[] {$"There is no user with username '{receiverUsername}'"}
+                    Errors = new[] {$"There is no user with username '{model.Username}'"}
                 };
+            if (senderUsername.UserName == model.Username)
+            {
+                return new PayloadResult<Message>
+                {
+                    Errors = new[] {$"U can't message yourself"}
+                };
+            }
             
             var sender = await _dataContext.Mailboxes.FirstOrDefaultAsync(x => x.UserId == senderId && x.Type == MailboxType.Sent);
             var receiver = await _dataContext.Mailboxes.FirstOrDefaultAsync(x => x.UserId == receiverId && x.Type == MailboxType.Received);
@@ -38,8 +47,10 @@ namespace Infrastructure.Services
                 Subject = model.Subject,
                 Content = model.Content,
                 ReceiverId = receiverId,
+                ReceiverUsername = model.Username,
                 IsViewed = false,
-                SenderId = senderId,
+                SenderId = senderUsername.Id,
+                SenderUsername = senderUsername.UserName,
                 SendDate = DateTime.UtcNow,
                 SentMailboxId = sender.Id,
                 ReceivedMailboxId = receiver.Id
@@ -61,11 +72,17 @@ namespace Infrastructure.Services
                 Payload = message
             };
         }
+        
+        public async Task<Message> GetById(Guid messageId)
+        {
+            return await _dataContext.Messages.FirstOrDefaultAsync(x => x.Id == messageId);
+        }
+
         public async Task<IEnumerable<Message>> GetUserSentMessages(string username)
         {
             var sender = await _dataContext.Users.FirstOrDefaultAsync(x => x.UserName == username);
 
-            return await _dataContext.Messages.Where(x => x.SenderId == sender.Id).ToListAsync();
+            return await _dataContext.Messages.Where(x => x.SenderId == sender.Id).OrderByDescending(x=>x.SendDate).ToListAsync();
         }
 
         public async Task<IEnumerable<Message>> GetUserReceivedMessages(string username)
@@ -74,9 +91,9 @@ namespace Infrastructure.Services
 
             await SetMessageAsViewed(receiver.UserName);
             
-            return await _dataContext.Messages.Where(x => x.ReceiverId == receiver.Id).ToListAsync();
+            return await _dataContext.Messages.Where(x => x.ReceiverId == receiver.Id).OrderByDescending(x=>x.SendDate).ToListAsync();
         }
-        public async Task<bool> SetMessageAsViewed(string username)
+        private async Task SetMessageAsViewed(string username)
         {
             var user = await GetIdFromUsernameAsync(username);
             var messages = await _dataContext.Messages.Where(x => x.ReceiverId == user).ToListAsync();
@@ -87,11 +104,11 @@ namespace Infrastructure.Services
                 _dataContext.Messages.Update(message);
             }
 
-            return await _dataContext.SaveChangesAsync() > 0;
+            await _dataContext.SaveChangesAsync();
         }
         public async Task<int> NewMessagesCount(string username)
         {
-            int unreadMessages = 0;
+            var unreadMessages = 0;
             var user = await GetIdFromUsernameAsync(username);
             var messages = await _dataContext.Messages.Where(x => x.ReceiverId == user).ToListAsync();
         
@@ -101,7 +118,8 @@ namespace Infrastructure.Services
             } 
             return unreadMessages;
         }
-        public async Task<string> GetIdFromUsernameAsync(string username)
+
+        private async Task<string> GetIdFromUsernameAsync(string username)
         {
             return (await _dataContext.Users.Where(x => x.UserName == username).FirstOrDefaultAsync())?.Id;
         }

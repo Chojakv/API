@@ -13,7 +13,7 @@ namespace Contracts
         {
             if (!context.ModelState.IsValid)
             {
-                var errorsInModelState = Enumerable.ToArray<KeyValuePair<string, IEnumerable<string>>>(context.ModelState
+                var errorsInModelState = Enumerable.ToArray(context.ModelState
                         .Where(x => x.Value.Errors.Any())
                         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(x => x.ErrorMessage)));
 

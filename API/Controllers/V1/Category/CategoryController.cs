@@ -59,7 +59,7 @@ namespace API.Controllers.V1.Category
         /// </summary>
         [HttpGet(ApiRoutes.Categories.Get)]
         [AllowAnonymous]
-        public async Task<IActionResult> Get([FromForm]Guid categoryId)
+        public async Task<IActionResult> Get([FromRoute]Guid categoryId)
         {
             var category = await _categoryService.GetCategoryByIdAsync(categoryId);
             if (category == null)

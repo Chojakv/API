@@ -6,9 +6,9 @@ namespace Application.Interfaces
 {
     public interface IUserService
     {
-        public Task<AppUser> GetUserByNameAsync(string username);
-        public Task<AppUser> GetUserByIdAsync(string id);
-        public Task<PayloadResult<AppUser>> UpdateUserAsync(AppUser user, AppUserUpdateModel model);
+        Task<AppUser> GetUserByNameAsync(string username);
+        Task<PayloadResult<AppUser>> UpdateUserAsync(AppUser user, AppUserUpdateModel model);
+        Task<string> UploadAvatar(string username, AppUserAvatarModel image);
 
     }
 }
