@@ -13,10 +13,9 @@ namespace Application.Models.Ad
         public string BookName { get; set; }
         public string Content { get; set; }
         public decimal Price { get; set; }
-        public IFormFile PictureAttached { get; set; }
         public Guid CategoryId { get; set; }
         
         public DateTime CreationDate = DateTime.UtcNow;
-        public ICollection<IFormFile> AdPhotos { get; set; }
+        
     }
 }

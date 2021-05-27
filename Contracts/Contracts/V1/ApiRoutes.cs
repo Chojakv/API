@@ -14,13 +14,12 @@
 
             public const string Logout = Base + "/logout";
         }
-        
-   
+
         public static class Message
         {
             public const string Create = Base + "/messages";
-
-            public const string Delete = Base + "/messages";
+            
+            public const string Get = Base + "/messages/{messageId}";
         }
         
         public static class Users
@@ -28,6 +27,8 @@
             public const string Get = Base + "/users/{username}";
 
             public const string Update = Base + "/users/{username}";
+
+            public const string UploadAvatar = Base + "/users/{username}/avatar";
 
             public static class Ads
             {
@@ -48,9 +49,9 @@
             public const string GetAll = Base + "/ads";
             
             public const string Get = Base + "/ads/{adId}";
-            
-            public const string GetByCategory = Base + "/ads/{categoryId}/ads";
 
+            public const string UploadPhoto = Base + "/ads/{adId}/photos";
+            
             public const string Create = Base + "/ads";
             
             public const string Update = Base + "/ads/{adId}";
@@ -67,7 +68,6 @@
             public const string Create = Base + "/categories";
             
             public const string Delete = Base + "/categories/{categoryId}";
-            
         }
     }
 }

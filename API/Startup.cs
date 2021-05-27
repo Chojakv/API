@@ -47,6 +47,7 @@ namespace API
             services.AddIdentity<AppUser, IdentityRole>(
                     q=>q.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<DataContext>();
+            services.AddScoped<IUserClaimsPrincipalFactory<AppUser>, UserClaimsPrincipalFactory<AppUser, IdentityRole>>();
             
             services.AddControllers();
             
@@ -71,7 +72,6 @@ namespace API
             services.AddScoped<IAdService, AdService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IMessageService, MessageService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -178,13 +178,14 @@ namespace API
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/Avatars")),
                 RequestPath = "/wwwroot/Avatars"
             });
-      
+
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
             app.UseAuthentication();
+            
             
             
             app.UseSwagger(option => { option.RouteTemplate = swaggerOptions.JsonRoute; });

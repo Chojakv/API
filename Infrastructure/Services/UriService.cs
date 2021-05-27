@@ -20,9 +20,6 @@ namespace Infrastructure.Services
         {
             return new Uri(_baseUri + ApiRoutes.Categories.Get.Replace("{categoryId}", categoryId));
         }
-        public Uri GetMessageUri(string messageId)
-        {
-            return new Uri(_baseUri + ApiRoutes.Categories.Get.Replace("{messageId}", messageId));
-        }
+        
     }
 }

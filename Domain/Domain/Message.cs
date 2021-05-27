@@ -12,7 +12,9 @@ namespace Domain.Domain
         public string Content { get; set; }
         public bool IsViewed { get; set; }
         public string SenderId { get; set; }
+        public string SenderUsername { get; set; }
         public string ReceiverId { get; set; }
+        public string ReceiverUsername { get; set; }
         public DateTime SendDate { get; set; }
     
         [ForeignKey("Sent")] 

@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models.Ad;
-using Application.Models.Photo;
 using AutoMapper;
 using Domain.Domain;
 using Domain.Filters;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace Infrastructure.Services
@@ -20,14 +21,12 @@ namespace Infrastructure.Services
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly IPhotoService _photoService;
-        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper, IConfiguration configuration, IPhotoService photoService)
+        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper, IConfiguration configuration)
         {
             _dataContext = dataContext;
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
             _configuration = configuration;
-            _photoService = photoService;
         }
         
         public async Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel)
@@ -36,32 +35,6 @@ namespace Infrastructure.Services
             ad.UserId = userId;
             ad.User = await _dataContext.Users.FindAsync(userId);
             ad.Category = await _dataContext.Categories.FirstOrDefaultAsync(x => x.Id == adModel.CategoryId);
-            
-            if (adModel.PictureAttached != null)
-            {
-                ad.PictureAttached = await _photoService.UploadImage("AdImageUrl", "AdImages", adModel.PictureAttached);
-            }
-
-            if (adModel.AdPhotos != null)
-            {
-                foreach (var image in adModel.AdPhotos)
-                {
-                    var photo = new PhotoDetailsModel
-                    {
-                        AdId = ad.Id,
-                        PhotoUrl = await _photoService.UploadImage("AdImageUrl", "AdImages", image)
-                    };
-                    var mapped = _mapper.Map<Photo>(photo);
-                    ad.AdPhotos.Add(mapped);
-                    
-                    foreach (var nullAd in ad.AdPhotos)
-                    {
-                        if (nullAd.PhotoUrl != null) continue;
-                        ad.AdPhotos.Remove(nullAd);
-                        break;
-                    }
-                }
-            }
             
             await _dataContext.AddAsync(ad);
         
@@ -84,17 +57,17 @@ namespace Infrastructure.Services
         public async Task<PagedList<Ad>> GetAdsAsync(GetAllAdsFilters filters, PaginationFilters pagination, string sort)
         {
             var collection = _dataContext.Ads as IQueryable<Ad>;
-
+        
             collection = GetFilers(filters, collection);
-
+        
             collection = SortAds(collection, sort);
-
+        
             return PagedList<Ad>.ToPagedList(collection, pagination.PageNumber, pagination.PageSize);
         }
         
         public async Task<Ad> GetAdByIdAsync(Guid adId)
         {
-            return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).Include(x=>x.AdPhotos).FirstOrDefaultAsync(x =>x.Id == adId);
+            return await _dataContext.Ads.Include(x=>x.User).Include(x=>x.Category).Include(x=>x.Images).FirstOrDefaultAsync(x =>x.Id == adId);
         }
         public async Task<PayloadResult<Ad>> UpdateAdAsync(Guid adId, AdUpdateModel adModel)
         {
@@ -105,12 +78,6 @@ namespace Infrastructure.Services
                 {
                     Errors = new[] {$"Ad with Id '{adId}' does not exists."},
                 };
-
-            if (adModel.PictureAttached != null)
-            {
-                ad.PictureAttached = await _photoService.UploadImage("AdImageUrl", "AdImages", adModel.PictureAttached);
-            }
-            else ad.PictureAttached = ad.PictureAttached;
             
             ad.Title = adModel.Title ?? ad.Title;
             ad.Author = adModel.Author ?? ad.Author;
@@ -192,7 +159,39 @@ namespace Infrastructure.Services
         
         public async Task<IEnumerable<Ad>> GetUserAdsAsync(string username)
         {
-            return await _dataContext.Ads.Where(x => x.User.UserName == username).Include(x=>x.User).Include(x=>x.Category).Include(x=>x.AdPhotos).ToListAsync();
+            return await _dataContext.Ads.Where(x => x.User.UserName == username).Include(x=>x.User).Include(x=>x.Category).Include(x=>x.Images).ToListAsync();
+        }
+
+        public async Task UploadAdImages(Guid adId, AdUploadPhotosModel images)
+        {
+            var url = _configuration.GetValue<string>("AdImageUrl");
+            
+            foreach (var photo in images.Images)
+            {
+                var fileName = photo.FileName;
+                var extension = Path.GetExtension(fileName);
+                
+                var newFileName = $"{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(_webHostEnvironment.ContentRootPath,"wwwroot", "AdImages", newFileName);
+
+                await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                await photo.CopyToAsync(fileStream);
+
+                var photoUrl = $"{url}/{newFileName}";
+                
+                var adPhoto = new AdPhotoDetailsModel
+                {
+                    Id = Guid.NewGuid(),
+                    AdId = adId,
+                    ImageUrl = photoUrl
+                };
+
+                var mapped = _mapper.Map<AdImage>(adPhoto);
+                
+                await _dataContext.AdImages.AddAsync(mapped);
+            }
+            
+            await _dataContext.SaveChangesAsync();
         }
 
         private static IQueryable<Ad> SortAds(IQueryable<Ad> collection, string sort)
@@ -202,7 +201,7 @@ namespace Infrastructure.Services
                 "title" => collection.OrderBy(x => x.Title),
                 "+price" => collection.OrderBy(x => x.Price),
                 "-price" => collection.OrderByDescending(x => x.Price),
-                "date" => collection.OrderBy(x => x.CreationDate),
+                "date" => collection.OrderByDescending(x => x.CreationDate),
                 _ => collection
             };
         }
@@ -211,8 +210,8 @@ namespace Infrastructure.Services
         {
             collection = filters.Condition switch
             {
-                Domain.Filters.Cond.New => collection.Where(x => x.Condition == Condition.New),
-                Domain.Filters.Cond.Used => collection.Where(x => x.Condition == Condition.Used),
+                "New" => collection.Where(x => x.Condition == Condition.New),
+                "Used" => collection.Where(x => x.Condition == Condition.Used),
                 _ => collection
             };
 
@@ -254,7 +253,7 @@ namespace Infrastructure.Services
                 collection = collection.Where(x => x.Title.Contains(filters.Title));
             }
             
-            return collection.Include(x=>x.User).Include(x=>x.Category);
+            return collection.Include(x=>x.User).Include(x=>x.Category).Include(x=>x.Images);
         }
         
         
