@@ -179,7 +179,7 @@ namespace Infrastructure.Services
                 await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                 await photo.CopyToAsync(fileStream);
 
-                var photoUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/Avatars//{newFileName}";
+                var photoUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/AdImages//{newFileName}";
                 
                 var adPhoto = new AdPhotoDetailsModel
                 {
