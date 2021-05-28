@@ -5,6 +5,7 @@ using Application.Interfaces;
 using Application.Models.AppUser;
 using Domain.Domain;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,13 +19,15 @@ namespace Infrastructure.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration)
+        public UserService(DataContext dataContext, UserManager<AppUser> userManager, IWebHostEnvironment webHostEnvironment, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _dataContext = dataContext;
             _userManager = userManager;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
         
         public async Task<AppUser> GetUserByNameAsync(string username)
@@ -76,9 +79,7 @@ namespace Infrastructure.Services
         }
 
         public async Task<string> UploadAvatar(string username, AppUserAvatarModel image)
-        {
-            var url = _configuration.GetValue<string>("AvatarUrl");
-            
+        { 
             var fileName = image.ProfileImage.FileName;
             var extension = Path.GetExtension(fileName);
 
@@ -90,8 +91,8 @@ namespace Infrastructure.Services
                 await image.ProfileImage.CopyToAsync(fileStream);
             }
 
-            var avatarUrl = $"{url}/{newFileName}";
-            
+            var avatarUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/Avatars/{newFileName}";
+
             var user = await GetUserByNameAsync(username);
    
             user.ProfileImage = avatarUrl;

@@ -9,6 +9,7 @@ using AutoMapper;
 using Domain.Domain;
 using Domain.Filters;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -21,12 +22,14 @@ namespace Infrastructure.Services
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AdService(DataContext dataContext, IWebHostEnvironment webHostEnvironment, IMapper mapper, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _dataContext = dataContext;
             _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
         
         public async Task<PayloadResult<Ad>> CreateAdAsync(string userId, AdCreationModel adModel)
@@ -164,8 +167,7 @@ namespace Infrastructure.Services
 
         public async Task UploadAdImages(Guid adId, AdUploadPhotosModel images)
         {
-            var url = _configuration.GetValue<string>("AdImageUrl");
-            
+
             foreach (var photo in images.Images)
             {
                 var fileName = photo.FileName;
@@ -177,7 +179,7 @@ namespace Infrastructure.Services
                 await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                 await photo.CopyToAsync(fileStream);
 
-                var photoUrl = $"{url}/{newFileName}";
+                var photoUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/Avatars//{newFileName}";
                 
                 var adPhoto = new AdPhotoDetailsModel
                 {
