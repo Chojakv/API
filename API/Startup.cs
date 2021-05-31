@@ -168,11 +168,17 @@ namespace API
             }
             
             app.UseHttpsRedirection();
+            
+            app.UseStaticFiles();
+            
+            CreateDirectory();
+            
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/AdImages")),
                 RequestPath = "/wwwroot/AdImages"
             });
+            
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "wwwroot/Avatars")),
@@ -218,6 +224,20 @@ namespace API
             {
                 var userRole = new IdentityRole("User");
                 await roleManager.CreateAsync(userRole);
+            }
+        }
+        private void CreateDirectory()
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Avatars");
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+            
+            var adImagesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/AdImages");
+            if (!Directory.Exists(adImagesDir))
+            {
+                Directory.CreateDirectory(adImagesDir);
             }
         }
     }
