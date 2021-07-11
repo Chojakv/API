@@ -85,21 +85,22 @@ namespace Infrastructure.Services
 
             var newFileName = $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(_webHostEnvironment.ContentRootPath,"wwwroot", "Avatars", newFileName);
-
+            
             await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 await image.ProfileImage.CopyToAsync(fileStream);
             }
 
-            var avatarUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/Avatars/{newFileName}";
+            var avatarUrl =
+                $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host.Value}/wwwroot/Avatars/{newFileName}";
 
             var user = await GetUserByNameAsync(username);
-   
+
             user.ProfileImage = avatarUrl;
-            
+
             await _dataContext.SaveChangesAsync();
 
             return avatarUrl;
+            }
         }
     }
-}

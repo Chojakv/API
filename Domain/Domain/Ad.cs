@@ -27,7 +27,6 @@ namespace Domain.Domain
         public string UserId { get; set; }
         public AppUser User { get; set; }
         public virtual ICollection<AdImage> Images { get; set; } = new List<AdImage>();
-
     }
     
     public enum Condition

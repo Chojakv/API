@@ -170,7 +170,7 @@ namespace API
             app.UseHttpsRedirection();
             
             app.UseStaticFiles();
-            
+
             CreateDirectory();
             
             app.UseStaticFiles(new StaticFileOptions
@@ -208,9 +208,9 @@ namespace API
                 endpoints.MapControllers();
             });
 
-            Task.Run(() => this.CreateRole(roleManager)).Wait();
+            Task.Run(() => CreateRole(roleManager)).Wait();
         }
-        private async Task CreateRole(IServiceProvider serviceProvider)
+        private static async Task CreateRole(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -226,7 +226,7 @@ namespace API
                 await roleManager.CreateAsync(userRole);
             }
         }
-        private void CreateDirectory()
+        private static void CreateDirectory()
         {
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Avatars");
             if (!Directory.Exists(filePath))

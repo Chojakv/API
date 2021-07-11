@@ -7,6 +7,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>d8d56320-428b-4af5-b514-f43e205e2b6c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -86,6 +87,41 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\AdImages\afc30e3a-cdc2-4df2-a9eb-05d68746ecf1.jpg" />
+    <Content Remove="wwwroot\AdImages\2d8fcb85-34ab-4bcb-b8be-b6c59d885e2e.jpg" />
+    <Content Remove="wwwroot\Avatars\3edea3b9-bc5b-4e89-879b-00a1b5ad979e.jpg" />
+    <Content Remove="wwwroot\Avatars\07e528d0-cbc2-4517-8e98-2e9f0f29ed68.jpg" />
+    <Content Remove="wwwroot\AdImages\9d86845b-31e0-434f-81e4-b743c43bb58e.jpg" />
+    <Content Remove="wwwroot\AdImages\49d73f57-dbeb-4ba4-9309-73a340f7cc20.jpg" />
+    <Content Remove="wwwroot\AdImages\089ebf5e-9f75-4917-a024-7031ebea8559.jpg" />
+    <Content Remove="wwwroot\AdImages\aeb8ee3c-97e3-48ce-b06e-2f7b20ba2894.jpg" />
+    <Content Remove="wwwroot\AdImages\a08ff0c6-f504-419e-a786-8c1dfd6033ea.jpg" />
+    <Content Remove="wwwroot\AdImages\47703762-252e-4c99-9f2c-f605b3a20fc7.jpg" />
+    <Content Remove="wwwroot\AdImages\20716659-3d13-48d2-9a00-d9016e207863.jpg" />
+    <Content Remove="wwwroot\AdImages\6085878c-b660-4ffe-ac4b-93e0320130aa.jpg" />
+    <Content Remove="wwwroot\AdImages\99659ea0-428c-494d-b344-a49854f2dc78.jpg" />
+    <Content Remove="wwwroot\AdImages\6288caf3-b54b-4c6d-9552-f91c3c401225.jpg" />
+    <Content Remove="wwwroot\Avatars\803a97c4-64d7-46bb-9a33-d4bce9c880e3.jpg" />
+    <Content Remove="wwwroot\AdImages\99bcf0c7-1bdd-4a76-93b4-b3b17ed2266e.jpg" />
+    <Content Remove="wwwroot\AdImages\99c5001a-4c4f-4dc0-9b86-21ddc2b61dbf.jpg" />
+    <Content Remove="wwwroot\AdImages\23158fcd-3491-4720-b19f-169c9acf983b.jpg" />
+    <Content Remove="wwwroot\AdImages\00206946-386a-4c1a-aa5c-479f8d43ed5b.jpg" />
+    <Content Remove="wwwroot\AdImages\2303bb51-3a2d-4122-bbb5-09dfc57f3a9e.png" />
+    <Content Remove="wwwroot\Avatars\9684f7f6-7a03-47ec-a3e6-59e9a56ec0dd.jpg" />
+    <Content Remove="wwwroot\AdImages\901334b9-6227-4259-afbe-56a558c8ee5c.jpg" />
+    <Content Remove="wwwroot\Avatars\2265b170-d3d7-4611-ab47-f49a68b79b62.jpg" />
+    <Content Remove="wwwroot\Avatars\ca77d19d-8e31-4bd9-9a5e-52ed191f6822.jpg" />
+    <Content Remove="wwwroot\Avatars\c67e3213-41f7-442b-bf22-2e043d614ec3.jpg" />
+    <Content Remove="wwwroot\Avatars\c3bca237-e03d-47fd-8c6a-1bca88efc09d.jpg" />
+    <Content Remove="wwwroot\Avatars\c0c6d6b9-4ffc-4896-948c-550952944e2f.jpg" />
+    <Content Remove="wwwroot\AdImages\d863c1c1-62d1-48c1-94ad-c8bc546e6caa.png" />
+    <Content Remove="wwwroot\Avatars\d3c295cb-5fe5-4236-8c96-8b5d0f40af53.jpg" />
+    <Content Remove="wwwroot\AdImages\d0e7835d-a981-4975-962f-aa963f047f77.jpg" />
+    <Content Remove="wwwroot\AdImages\f2e2f40d-a108-42fd-b53b-cc9d68740be9.jpg" />
+    <Content Remove="wwwroot\AdImages\e7e46e21-3b40-40a8-8652-7f414fea4288.jpg" />
   </ItemGroup>
 
 </Project>
